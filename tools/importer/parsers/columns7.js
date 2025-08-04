@@ -1,21 +1,19 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Get all direct child divs (columns)
-  const columnDivs = Array.from(element.querySelectorAll(':scope > div'));
+  // Gather all the columns (immediate children)
+  const columns = Array.from(element.querySelectorAll(':scope > div'));
+  if (columns.length === 0) return;
 
-  // For each column, try to extract the main image (if any)
-  const cellsRow = columnDivs.map(div => {
-    // If the div is an aspect ratio wrapper with an img inside, use the img for the cell
-    const img = div.querySelector('img');
-    if (img) return img;
-    // Otherwise, use the entire div in the cell
-    return div;
-  });
+  // The header row must be a single cell (one column)
+  const headerRow = ['Columns (columns7)'];
 
-  // Header matches the example exactly
+  // The content row must match the number of columns (one cell per column)
+  const contentRow = columns;
+
   const table = WebImporter.DOMUtils.createTable([
-    ['Columns (columns7)'],
-    cellsRow
+    headerRow,
+    contentRow
   ], document);
+
   element.replaceWith(table);
 }

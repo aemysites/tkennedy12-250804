@@ -1,42 +1,42 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row: matches exactly to the example
+  // Header row
   const headerRow = ['Hero (hero12)'];
 
-  // Find the background image: first .cover-image in the first grid cell
-  let backgroundImg = null;
-  const grid = element.querySelector('.w-layout-grid');
-  if (grid) {
-    const gridChildren = grid.querySelectorAll(':scope > div');
-    if (gridChildren.length > 0) {
-      backgroundImg = gridChildren[0].querySelector('img.cover-image') || null;
-    }
-  }
-  // Row for background image (may be null)
-  const bgRow = [backgroundImg];
+  // Find the main grid (should contain two main children: bg image and content)
+  const grid = element.querySelector('.w-layout-grid.grid-layout');
 
-  // Find the content cell: card-body (text, icons, ctas)
-  let contentCell = null;
+  // Row 2: Background image (first immediate child of grid with an img)
+  let bgImg = '';
+  if (grid && grid.children.length > 0) {
+    const imgDiv = grid.children[0];
+    const img = imgDiv.querySelector('img');
+    if (img) bgImg = img;
+  }
+
+  // Row 3: Foreground content (headline, subheading, cta)
+  // This is the entire content area/card, reference the main card body
+  let contentCell = '';
   if (grid && grid.children.length > 1) {
-    // Second grid child contains the card
-    const cardContainer = grid.children[1];
-    // The card-body contains all text & buttons
-    const cardBody = cardContainer.querySelector('.card-body');
-    if (cardBody) {
-      contentCell = cardBody;
+    const containerDiv = grid.children[1];
+    // The main content is within .card-body, but we want all content in that column
+    const card = containerDiv.querySelector('.card');
+    if (card) {
+      // Reference the .card-body (guaranteed to contain all relevant content, including heading, list, cta)
+      const cardBody = card.querySelector('.card-body');
+      if (cardBody) contentCell = cardBody;
+      else contentCell = card; // fallback
     } else {
-      // fallback: use the cardContainer itself
-      contentCell = cardContainer;
+      // fallback: use the containerDiv itself
+      contentCell = containerDiv;
     }
   }
-  const contentRow = [contentCell];
 
-  // Compose the block table
   const cells = [
     headerRow,
-    bgRow,
-    contentRow
+    [bgImg],
+    [contentCell]
   ];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

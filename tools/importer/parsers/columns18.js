@@ -1,61 +1,37 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid container for the columns
+  // Find the main grid container
   const grid = element.querySelector('.w-layout-grid');
   if (!grid) return;
 
-  // Get direct children of the grid (which form the columns)
-  const gridChildren = Array.from(grid.children);
+  // Identify columns in the grid
+  let textCol = null;
+  let contactCol = null;
+  let imageCol = null;
 
-  // In this HTML, the layout is:
-  // - First: left text content (h2, h3, p)
-  // - Second: ul list (contacts)
-  // - Third: image
-  // Visually, left = first + second (text + contacts), right = third (image)
-
-  let leftContent = null;
-  let contactList = null;
-  let rightImage = null;
-
-  // Assign content
-  for (const child of gridChildren) {
-    if (child.tagName === 'DIV' && !leftContent) {
-      leftContent = child;
-    } else if (child.tagName === 'UL' && !contactList) {
-      contactList = child;
-    } else if (child.tagName === 'IMG' && !rightImage) {
-      rightImage = child;
+  for (const child of grid.children) {
+    if (child.tagName === 'DIV' && !textCol) {
+      textCol = child;
+    } else if (child.tagName === 'UL' && !contactCol) {
+      contactCol = child;
+    } else if (child.tagName === 'IMG' && !imageCol) {
+      imageCol = child;
     }
   }
 
-  // Defensive: If leftContent missing, do nothing
-  if (!leftContent) return;
+  // Compose left column content (text + contact info)
+  const leftColContent = [];
+  if (textCol) leftColContent.push(textCol);
+  if (contactCol) leftColContent.push(contactCol);
 
-  // Compose left block: want to keep heading, subheading, and the contact ul (if present)
-  // We'll create a wrapper div for left cell if both are present, else just use leftContent
-  let leftCell;
-  if (contactList) {
-    const leftDiv = document.createElement('div');
-    leftDiv.appendChild(leftContent);
-    leftDiv.appendChild(contactList);
-    leftCell = leftDiv;
-  } else {
-    leftCell = leftContent;
-  }
+  // Header row must have two cells to match block structure exactly
+  const headerRow = ['Columns (columns18)', ''];
+  const contentRow = [leftColContent, imageCol ? imageCol : ''];
 
-  // Compose right block: just the image (or null if not found)
-  const rightCell = rightImage || '';
-
-  // Prepare table cells: header and content row (with left and right columns)
-  // HEADER: must be a single cell/column only
-  const headerRow = ['Columns (columns18)'];
-  // The content row: two columns
-  const contentRow = [[leftCell, rightCell]];
-
-  // Create table and swap in
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
-    ...contentRow
+    contentRow
   ], document);
+
   element.replaceWith(table);
 }

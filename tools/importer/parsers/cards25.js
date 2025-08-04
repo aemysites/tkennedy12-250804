@@ -1,43 +1,43 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header must match the example exactly
+  // Header for the table as per block specification
   const headerRow = ['Cards (cards25)'];
-  const cells = [headerRow];
+  const rows = [headerRow];
 
-  // Helper to create the text content cell for a card
-  function createTextCell(cardDiv) {
-    // Pick only the first heading and first paragraph in the card's text wrapper
-    const heading = cardDiv.querySelector('h1, h2, h3, h4, h5, h6');
-    const description = cardDiv.querySelector('p');
-    const parts = [];
-    if (heading) parts.push(heading);
-    if (description) parts.push(description);
-    if (parts.length === 0) return '';
-    if (parts.length === 1) return parts[0];
-    return parts;
-  }
+  // Each card is a direct child <div> with an <img> and (optionally) text
+  const cards = Array.from(element.querySelectorAll(':scope > div'));
 
-  // Each immediate child div is a card (may have just image or image+text)
-  const cardDivs = Array.from(element.querySelectorAll(':scope > div'));
-
-  cardDivs.forEach(cardDiv => {
-    // Find the first image in the cardDiv
-    const img = cardDiv.querySelector('img');
-
-    // Determine if there is a heading or paragraph in the cardDiv
-    const hasText = !!cardDiv.querySelector('h1, h2, h3, h4, h5, h6, p');
-
-    if (img && hasText) {
-      // Both image and text
-      const textCell = createTextCell(cardDiv);
-      cells.push([img, textCell]);
-    } else if (img) {
-      // Just image
-      cells.push([img, '']);
+  cards.forEach(card => {
+    // Find the first image in the card
+    const img = card.querySelector('img');
+    // Find the text content area (h3 and p grouped)
+    let textCell = null;
+    const textWrap = card.querySelector('.utility-padding-all-2rem');
+    if (textWrap) {
+      // We want to preserve heading and paragraph, and any present structure
+      // Reference existing elements from the document, do not clone
+      const textNodes = [];
+      const h3 = textWrap.querySelector('h3');
+      const p = textWrap.querySelector('p');
+      if (h3) textNodes.push(h3);
+      if (p) textNodes.push(p);
+      // If both are missing, textCell stays null
+      if (textNodes.length > 0) textCell = textNodes;
     }
-    // If no image, skip this card as per block definition
+    // Push rows following the 2-column structure: [img, text]
+    // If only image, second cell is blank
+    // If only text, first cell is blank
+    if (img && textCell) {
+      rows.push([img, textCell]);
+    } else if (img) {
+      rows.push([img, '']);
+    } else if (textCell) {
+      rows.push(['', textCell]);
+    }
+    // If neither, skip (should not happen)
   });
 
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Replace original element with created table
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

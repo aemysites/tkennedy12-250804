@@ -1,19 +1,23 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid layout containing the columns
+  // Find the grid container with columns
   const grid = element.querySelector('.grid-layout');
   if (!grid) return;
-  
-  // Get the direct children (the columns)
-  const columns = Array.from(grid.children);
-  if (columns.length === 0) return;
 
-  // Table header matches example: Columns (columns3)
+  // Get all immediate children of the grid (each is a column)
+  const gridChildren = Array.from(grid.children);
+
+  // In this layout, we want to produce a table with 1 header row (single cell),
+  // and then a 1-row, N-column row, where N = number of columns in the grid.
+  // The example has 2 columns in the second row, matching the HTML.
+
   const headerRow = ['Columns (columns3)'];
-  // Use all top-level columns in the content row
-  const contentRow = columns;
-  
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  const columnsRow = gridChildren;
+
+  // Compose the table structure
+  const tableData = [headerRow, columnsRow];
+
+  // Create table and replace the original element
+  const block = WebImporter.DOMUtils.createTable(tableData, document);
+  element.replaceWith(block);
 }

@@ -1,22 +1,20 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Cards block expects each card as a row, with the header row first
-  const headerRow = ['Cards'];
-  const cards = Array.from(element.querySelectorAll(':scope > div'));
-  const rows = cards.map((card) => {
-    // Each 'card' is a flex-horizontal block, containing:
-    // an icon (can be omitted), and a <p> (the text), both as direct/indirect children
-    // Get the <p> with the text, we want to preserve the whole <p> element for reference
-    const content = card.querySelector('p');
-    // Edge case: skip row if <p> is missing
-    if (!content) return null;
-    return [content];
-  }).filter(Boolean); // Remove any null entries (in case of missing <p>)
-  if (rows.length === 0) {
-    // If for some reason no cards, do not replace
-    return;
-  }
-  const tableArr = [headerRow, ...rows];
-  const block = WebImporter.DOMUtils.createTable(tableArr, document);
-  element.replaceWith(block);
+  // Create array of table rows, beginning with the header
+  const rows = [['Cards']];
+
+  // Select all immediate card divs
+  const cardDivs = element.querySelectorAll(':scope > div');
+
+  cardDivs.forEach((card) => {
+    // Each card contains an icon (svg) and a p with text. Only use the <p>.
+    const p = card.querySelector('p');
+    if (p) {
+      rows.push([p]); // Reference the existing paragraph element directly
+    }
+  });
+
+  // Build table and replace original element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

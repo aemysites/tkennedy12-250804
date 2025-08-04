@@ -1,25 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid container that holds the columns (children as columns)
-  const grid = element.querySelector('.w-layout-grid, .grid-layout');
+  // Find the grid layout
+  const grid = element.querySelector(':scope > .w-layout-grid, :scope > div.w-layout-grid');
   if (!grid) return;
-  
-  // The columns14 pattern is: each direct child of grid is a column block
-  const columns = Array.from(grid.children);
-  if (columns.length === 0) return;
+  const gridChildren = Array.from(grid.children).filter(el => el.nodeType === 1);
+  // Defensive: need heading and content columns
+  if (gridChildren.length < 2) return;
+  // Left: heading h2, Right: descriptive block with text and button
+  const heading = gridChildren[0];
+  const rightBlock = gridChildren[1];
 
-  // Compose header row: must be a single-cell row containing only the block name
-  const headerRow = ['Columns (columns14)'];
+  // In Columns (columns14) the visual structure is: left column = heading + paragraph + button, right column empty (since there are only two children)
+  // But the example is a two-column table -- so for this HTML, we should make column 1: heading, column 2: text + button
 
-  // Compose the data row: one cell per column (each cell contains one column block)
-  const dataRow = columns.map(col => col);
+  // Gather content for left cell (heading)
+  const leftCell = heading;
+  // Gather content for right cell (all children of rightBlock)
+  const rightCellChildren = Array.from(rightBlock.childNodes).filter(node => {
+    // Only include element nodes or meaningful text nodes
+    return (node.nodeType === 1) || (node.nodeType === 3 && node.textContent.trim());
+  });
+  // If there is only one element, just use the element. If multiple, use array.
+  let rightCell;
+  if (rightCellChildren.length === 1) {
+    rightCell = rightCellChildren[0];
+  } else {
+    rightCell = rightCellChildren;
+  }
 
-  // Compose the table
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow, // single cell (spans columns)
-    dataRow    // as many cells as columns
-  ], document);
+  // Build the table as in the example: header is single cell, content row has two columns
+  const cells = [
+    ['Columns (columns14)'],
+    [leftCell, rightCell]
+  ];
 
-  // Replace the original element
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

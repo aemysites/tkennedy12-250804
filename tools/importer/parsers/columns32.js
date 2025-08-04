@@ -1,26 +1,25 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid layout inside the section
-  const grid = element.querySelector('.w-layout-grid');
+  // Find the grid holding the columns
+  const grid = element.querySelector('.w-layout-grid, .grid-layout');
   if (!grid) return;
-
-  // Get the direct children (columns) of the grid
+  // Get all direct children of the grid (columns)
   const columns = Array.from(grid.children);
-  // We expect 2 columns: image, content
-  if (columns.length < 2) return;
 
-  // Reference the existing image element (first column)
-  const imageEl = columns[0];
-  // Reference the content block (second column)
-  const contentEl = columns[1];
+  // For this design, the first column is img, the second is a div with all text info
+  // Both should be referenced directly so as to retain all content and formatting
 
-  // Structure: header, then one row with both columns
+  // Table header as per requirements
   const headerRow = ['Columns (columns32)'];
-  const contentRow = [imageEl, contentEl];
-  const cells = [headerRow, contentRow];
 
-  // Create the block table
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Table row: each cell is a column from the grid
+  const contentRow = columns.map((col) => col);
+
+  // Create the columns block table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow
+  ], document);
 
   // Replace the original element with the block table
   element.replaceWith(table);

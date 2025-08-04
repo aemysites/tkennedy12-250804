@@ -1118,8 +1118,6 @@
   background: #fff;
   padding: 0;
 }
-
-/* Restore image columns if hidden by any previous CSS */
 .columns.columns16 .columns-img-col {
   display: flex;
   align-items: center;
@@ -1136,13 +1134,9 @@
   height: auto;
   transition: transform 0.25s;
 }
-
-/* Always show all columns regardless of previous display: none */
 .columns.columns16 > div > .columns-img-col {
   display: flex;
 }
-
-/* Main flex row for images, centered horizontally and vertically */
 .columns.columns16 > div {
   display: flex;
   flex-direction: row;
@@ -1157,8 +1151,6 @@
   background: #fff;
   flex-wrap: nowrap;
 }
-
-/* Make sure images don't have border radius and use their natural aspect ratio */
 .columns.columns16 .columns-img-col picture,
 .columns.columns16 .columns-img-col img {
   display: block;
@@ -1170,16 +1162,12 @@
   box-shadow: none;
   aspect-ratio: unset;
 }
-
-/* Apply playful rotation to each image for a dynamic look */
 .columns.columns16 .columns-img-col:nth-child(1) { transform: rotate(-6deg); }
 .columns.columns16 .columns-img-col:nth-child(2) { transform: rotate(4deg); }
 .columns.columns16 .columns-img-col:nth-child(3) { transform: rotate(-3deg); }
 .columns.columns16 .columns-img-col:nth-child(4) { transform: rotate(5deg); }
 .columns.columns16 .columns-img-col:nth-child(5) { transform: rotate(-2deg); }
 .columns.columns16 .columns-img-col:nth-child(6) { transform: rotate(4deg); }
-
-/* Responsive: allow horizontal scrolling for overflow on narrow screens */
 @media (max-width: 900px) {
   .columns.columns16 > div {
     gap: 20px;
@@ -1204,5 +1192,231 @@
     width: 90vw;
     min-width: 0;
     max-width: 100%;
+  }
+}
+
+
+.columns.columns18 {
+  background: #fff;
+  border-radius: 0;
+  padding: 24px 0 28px 0;
+}
+
+.columns.columns18 > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.65fr);
+  gap: 100px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px;
+  min-height: 520px;
+}
+
+@media (max-width: 1100px) {
+  .columns.columns18 > div {
+    gap: 36px;
+    padding: 0 16px;
+  }
+}
+@media (max-width: 900px) {
+  .columns.columns18 {
+    padding: 16px 0 20px 0;
+  }
+  .columns.columns18 > div {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 0 8px;
+    min-height: unset;
+  }
+}
+
+/* Left column (text + contact) */
+.columns.columns18 > div > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 445px;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  text-align: left;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Headings and intro */
+.columns.columns18 h2 {
+  font-size: 13px;
+  color: #757575;
+  text-transform: uppercase;
+  font-family: var(--heading-font-family, sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  margin: 0 0 2px 0;
+}
+
+.columns.columns18 h3 {
+  font-size: 2.4rem;
+  color: #222;
+  text-transform: uppercase;
+  font-family: 'Montserrat', 'Futura', var(--heading-font-family, sans-serif);
+  font-weight: 400;
+  margin: 0 0 12px 0;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+}
+
+.columns.columns18 p {
+  color: #757575;
+  font-size: 16px;
+  margin: 0 0 16px 0;
+  font-family: var(--body-font-family, sans-serif);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+/* Contact Info Section: extremely compact vertical stack */
+.columns.columns18 > div > div:first-child h4 {
+  font-size: 12px;
+  color: #757575;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 600;
+  margin: 6px 0 0 0;
+  padding: 0;
+  line-height: 1.25;
+}
+
+.columns.columns18 > div > div:first-child h4:first-of-type {
+  margin-top: 22px;
+}
+
+.columns.columns18 > div > div:first-child ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.columns.columns18 > div > div:first-child h4 + ul {
+  margin-top: 2px;
+}
+
+.columns.columns18 > div > div:first-child ul li {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 13px;
+  margin: 0;
+  padding: 0;
+  min-height: 38px;
+  line-height: 1.34;
+}
+
+/* Remove accidental gaps between li in a ul */
+.columns.columns18 > div > div:first-child ul li + li {
+  margin-top: 0;
+}
+
+/* Label/value block: as tight as possible */
+.columns.columns18 > div > div:first-child ul li > *:not(picture) {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.columns.columns18 ul picture {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f4;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  margin-right: 0;
+  box-sizing: border-box;
+}
+
+.columns.columns18 ul picture img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Link/value style */
+.columns.columns18 ul li a,
+.columns.columns18 ul li {
+  color: #222;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 15px;
+  margin-left: 0;
+}
+
+.columns.columns18 ul li a:hover {
+  color: var(--link-hover-color, #1d3ecf);
+  text-decoration: underline;
+}
+
+/* Tighter contact block grouping */
+.columns.columns18 > div > div:first-child h4 + ul {
+  margin-bottom: 0;
+}
+.columns.columns18 > div > div:first-child h4:not(:first-of-type) {
+  margin-top: 6px;
+}
+.columns.columns18 > div > div:first-child ul:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Remove extra space at the bottom of last element in left column */
+.columns.columns18 > div > div:first-child > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Right column: image covers entire cell, aligns with top */
+.columns.columns18 > div > .columns-img-col {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  align-self: stretch;
+}
+
+.columns.columns18 > div > .columns-img-col picture,
+.columns.columns18 > div > .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border-radius: 32px;
+  object-fit: cover;
+  display: block;
+  background: #f4f4f4;
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  .columns.columns18 > div > .columns-img-col {
+    min-height: 190px;
+    height: auto;
+    margin-top: 18px;
+  }
+  .columns.columns18 > div > .columns-img-col picture,
+  .columns.columns18 > div > .columns-img-col img {
+    max-width: 100%;
+    border-radius: 18px;
+    aspect-ratio: 16/10;
+    height: auto;
+    min-height: 0;
   }
 }

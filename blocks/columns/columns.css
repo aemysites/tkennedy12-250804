@@ -168,3 +168,223 @@
     text-align: center;
   }
 }
+
+
+.columns.columns2 > div {
+  display: grid;
+  grid-template-columns: 1fr 1.22fr 1.22fr;
+  gap: 2.3rem 3.1rem;
+  align-items: start;
+  padding-top: 2.4rem;
+  padding-bottom: 2.4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Responsive: stack columns vertically on small screens */
+@media (max-width: 900px) {
+  .columns.columns2 > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    max-width: 100%;
+  }
+}
+
+/* --- Left Column: Image & headline --- */
+.columns.columns2 .columns-img-col {
+  grid-column: 1 / 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2.2rem;
+  margin-bottom: 0;
+}
+
+.columns.columns2 .columns-img-col picture img {
+  border-radius: 21px;
+  max-width: 460px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-bottom: 1.2rem;
+}
+
+.columns.columns2 .columns-img-col br {
+  display: none;
+}
+
+.columns.columns2 .columns-img-col a {
+  display: block;
+  font-family: var(--heading-font-family);
+  font-size: 2.24rem;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: -0.01em;
+  margin-bottom: 1.12rem;
+  margin-top: 0;
+  line-height: 1.13;
+  text-decoration: none;
+  text-align: left;
+  word-break: break-word;
+}
+
+/* --- Card stack (middle column) --- */
+.columns.columns2 > div > div > p:nth-of-type(1),
+.columns.columns2 > div > div > p:nth-of-type(2),
+.columns.columns2 > div > div > h3:nth-of-type(1),
+.columns.columns2 > div > div > p:nth-of-type(3),
+.columns.columns2 > div > div > h3:nth-of-type(2),
+.columns.columns2 > div > div > p:nth-of-type(4) {
+  grid-column: 2 / 3;
+  width: 100%;
+  max-width: 410px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Card images: make both cards' images the same width */
+.columns.columns2 > div > div > p:nth-of-type(1) picture img,
+.columns.columns2 > div > div > p:nth-of-type(4) picture img {
+  border-radius: 16px;
+  width: 100%;
+  max-width: 300px;
+  min-width: 170px;
+  height: auto;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+/* Card tag (button as label) */
+.columns.columns2 > div > div > p.button-container .button {
+  background: #f5f5f5;
+  color: #252525;
+  font-size: 0.91rem;
+  font-weight: 700;
+  font-family: var(--body-font-family);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  border-radius: 1.1em;
+  line-height: 1.23;
+  padding: 0.19em 1.05em;
+  margin: 0 0 0.32em 0;
+  border: none;
+  box-shadow: none;
+  display: inline-block;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(-n+2) {
+  font-family: var(--heading-font-family);
+  font-weight: 600;
+  font-size: 1.21rem;
+  color: #181818;
+  margin: 0.12em 0 0.13em 0;
+  letter-spacing: -0.01em;
+  line-height: 1.12;
+  text-transform: none;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(-n+2) a {
+  color: #181818;
+  text-decoration: none;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(-n+2) + p.button-container .button {
+  font-size: 1.07rem;
+  color: #555;
+  background: none;
+  padding: 0;
+  border: none;
+  font-family: var(--body-font-family);
+  font-weight: 400;
+  line-height: 1.52;
+  letter-spacing: 0;
+  text-transform: none;
+  margin: 0 0 0.15em 0;
+  text-align: left;
+  white-space: normal;
+  overflow: visible;
+}
+
+/* Reduce vertical gap between the two cards */
+.columns.columns2 > div > div > p:nth-of-type(4) {
+  margin-top: 0.7rem;
+}
+
+/* --- List stack (right column) --- */
+.columns.columns2 > div > div > h3:nth-of-type(n+3),
+.columns.columns2 > div > div > h3:nth-of-type(n+3) + p.button-container {
+  grid-column: 3 / 4;
+  width: 100%;
+  max-width: 370px;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(n+3) {
+  font-family: var(--heading-font-family);
+  font-size: 1.12rem;
+  color: #1b1b1b;
+  margin-top: 0.2rem;
+  margin-bottom: 0.02em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  border-top: 1.3px solid #e1e1e1;
+  padding-top: 0.55rem;
+  line-height: 1.18;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(3) {
+  border-top: none;
+  padding-top: 0.1rem;
+  margin-top: 0.1rem;
+}
+
+.columns.columns2 > div > div > h3:nth-of-type(n+3) a {
+  color: #181818;
+  text-decoration: none;
+}
+
+/* List item description: less prominent, allow wrapping */
+.columns.columns2 > div > div > h3:nth-of-type(n+3) + p.button-container .button {
+  color: #7d7d7d;
+  font-family: var(--body-font-family);
+  font-size: 0.98rem;
+  background: none;
+  border: none;
+  padding: 0;
+  font-weight: 400;
+  margin-bottom: 0.45em;
+  margin-top: 0;
+  text-transform: none;
+  line-height: 1.44;
+  box-shadow: none;
+  text-align: left;
+  white-space: normal;
+  overflow: visible;
+}
+
+/* Remove margin from last list item */
+.columns.columns2 > div > div > h3:last-of-type + p.button-container {
+  margin-bottom: 0;
+}
+
+/* --- Column stacking for mobile --- */
+@media (max-width: 900px) {
+  .columns.columns2 > div > div > *,
+  .columns.columns2 > div > div > h3,
+  .columns.columns2 > div > div > p.button-container,
+  .columns.columns2 > div > div > p {
+    grid-column: 1 / -1;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+.columns.columns2 > div > div {
+  align-items: flex-start;
+}

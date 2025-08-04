@@ -616,8 +616,6 @@
   position: relative;
   font-family: var(--body-font-family);
 }
-
-/* Grid: slightly wider first col, compact gap */
 .columns.columns9 > div {
   display: grid;
   grid-template-columns: 170px 1fr 1fr 1fr;
@@ -627,8 +625,6 @@
   margin: 0 auto;
   padding-bottom: 32px;
 }
-
-/* Responsive: stack/pair columns at breakpoints */
 @media (max-width: 1023px) {
   .columns.columns9 > div {
     grid-template-columns: 1fr 1fr;
@@ -646,8 +642,6 @@
     padding: 24px 0 0 0;
   }
 }
-
-/* Bottom border */
 .columns.columns9::after {
   display: block;
   content: "";
@@ -659,8 +653,6 @@
   left: 0;
   bottom: 0;
 }
-
-/* --- First column: logo, brand, social icons --- */
 .columns.columns9 > div > div:first-child {
   display: flex;
   flex-direction: column;
@@ -670,8 +662,6 @@
   min-width: 0;
   padding-top: 0;
 }
-
-/* Logo and brand: Horizontal row */
 .columns.columns9 > div > div:first-child > p:first-child {
   display: flex;
   flex-direction: row;
@@ -680,8 +670,6 @@
   margin: 0;
   padding: 0;
 }
-
-/* Logo image: ensure always visible and correct size */
 .columns.columns9 > div > div:first-child picture,
 .columns.columns9 > div > div:first-child picture img {
   display: inline-block;
@@ -694,8 +682,6 @@
   vertical-align: middle;
   background: none;
 }
-
-/* Brand name: remove button look, plain uppercase text */
 .columns-container > .columns-wrapper > .block.columns.columns9 > div > div:first-child .button-container .button {
   background: none;
   border: none;
@@ -717,8 +703,6 @@
   margin: 0;
   padding: 0;
 }
-
-/* Social icons: horizontal row of icons only, show only icon lis using nth-child(odd) */
 .columns.columns9 > div > div:first-child ul {
   display: flex;
   flex-direction: row;
@@ -749,8 +733,6 @@
   background: none;
   vertical-align: middle;
 }
-
-/* --- Navigation columns --- */
 .columns.columns9 > div > div:not(:first-child) {
   display: flex;
   flex-direction: column;
@@ -794,11 +776,79 @@
 .columns.columns9 > div > div:not(:first-child) ul li a:hover {
   opacity: 0.7;
 }
-
-/* Remove default margin from all first/last children for a compact look */
 .columns.columns9 > div > div > *:first-child {
   margin-top: 0;
 }
 .columns.columns9 > div > div > *:last-child {
   margin-bottom: 0;
+}
+
+
+.columns > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 40px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 0 0 auto;
+  padding-top: 48px;
+  padding-bottom: 48px;
+  /* Visually balances image area to the right as in the original layout */
+}
+
+/* Only show the first two images, side by side */
+.columns > div > .columns-img-col {
+  display: flex;
+  flex: 0 1 360px;
+  max-width: 360px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 32px;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background: #f5f5f5;
+}
+
+.columns > div > .columns-img-col:nth-child(n+3) {
+  display: none;
+}
+
+/* Image styles */
+.columns > div > .columns-img-col picture,
+.columns > div > .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 32px;
+  background: #f5f5f5;
+}
+
+/* Responsive: stack images vertically on small screens and show all */
+@media (max-width: 900px) {
+  .columns > div {
+    flex-direction: column;
+    gap: 24px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding-top: 24px;
+    padding-bottom: 24px;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+  .columns > div > .columns-img-col {
+    max-width: 100%;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    margin: 0;
+    display: flex;
+    border-radius: 24px;
+  }
+  .columns > div > .columns-img-col:nth-child(n+3) {
+    display: flex;
+  }
 }

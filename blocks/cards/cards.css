@@ -1,4 +1,3 @@
-/* Fixed CSS Code */
 .cards > ul {
   list-style: none;
   margin: 0;
@@ -34,7 +33,6 @@
   padding: 0;
 }
 
-/* Main Grid Layout */
 .cards.cards10 > ul {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -44,7 +42,6 @@
   list-style: none;
 }
 
-/* Responsive: 2 columns on medium, 1 on mobile */
 @media (width <= 1024px) {
   .cards.cards10 > ul {
     grid-template-columns: repeat(2, 1fr);
@@ -58,7 +55,6 @@
   }
 }
 
-/* Card Container */
 .cards.cards10 > ul > li {
   background: #fff;
   border-radius: 16px;
@@ -72,11 +68,8 @@
   margin: 0;
 }
 
-/* Card Image Styles - Fix for missing images */
 .cards.cards10 .cards-card-image {
   width: 100%;
-
-  /* Remove aspect-ratio and set explicit height for compatibility */
   height: 180px;
   min-height: 120px;
   max-height: 220px;
@@ -102,7 +95,6 @@
   padding: 0;
 }
 
-/* Card Body */
 .cards.cards10 .cards-card-body {
   padding: 24px 18px 20px;
   background: #fff;
@@ -113,7 +105,6 @@
   box-sizing: border-box;
 }
 
-/* Category Pill */
 .cards.cards10 .cards-card-body > p:first-child {
   display: inline-block;
   padding: 1.5px 10px;
@@ -128,7 +119,6 @@
   line-height: 1.1;
 }
 
-/* Heading */
 .cards.cards10 .cards-card-body > h3 {
   margin: 0 0 8px;
   font-size: 1rem;
@@ -138,11 +128,10 @@
   text-transform: uppercase;
   line-height: 1.12;
   letter-spacing: 0.015em;
-  word-wrap: break-word; /* Updated property */
+  word-wrap: break-word;
   overflow-wrap: anywhere;
 }
 
-/* Description */
 .cards.cards10 .cards-card-body > p:last-child {
   margin: 0;
   color: #767676;
@@ -151,4 +140,83 @@
   font-weight: 400;
   line-height: 1.25;
   flex: 1 1 auto;
+}
+
+
+.cards.cards17 {
+  background: #fff;
+  padding: 0;
+}
+
+/* More compact grid and tighter gaps for better density */
+.cards.cards17 > ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 750px;
+  margin: 24px auto;
+  padding: 0;
+  list-style: none;
+  place-items: stretch stretch;
+}
+
+/* Cards stay square and proportional, sized by the grid */
+.cards.cards17 > ul > li {
+  background: #fff;
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Card image fills card and stays square */
+.cards.cards17 .cards-card-image {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 16px;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+/* Image: fill, crop, match border radius */
+.cards.cards17 .cards-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  display: block;
+  aspect-ratio: 1 / 1;
+}
+
+/* Remove unnecessary body spacing */
+.cards.cards17 .cards-card-body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Responsive: 2 columns on medium screens, 1 on small screens */
+@media (width <= 900px) {
+  .cards.cards17 > ul {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 500px;
+  }
+}
+
+@media (width <= 600px) {
+  .cards.cards17 > ul {
+    grid-template-columns: 1fr;
+    max-width: 95vw;
+  }
 }

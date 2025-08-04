@@ -1,69 +1,40 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header as in markdown example
-  const cells = [['Cards (cards23)']];
-
-  // Find all .w-tab-pane elements (tabs)
-  const tabPanes = element.querySelectorAll('[class*="w-tab-pane"]');
-
+  // Prepare the header row as in the example
+  const headerRow = ['Cards (cards23)'];
+  const cells = [headerRow];
+  // Find all tab panes inside the provided element
+  const tabPanes = element.querySelectorAll('.w-tab-pane');
   tabPanes.forEach((tabPane) => {
-    // Each tab contains a grid of cards
+    // Find the grid of cards
     const grid = tabPane.querySelector('.w-layout-grid');
     if (!grid) return;
-    // Each card is a direct <a> child
-    const cards = grid.querySelectorAll(':scope > a');
-    cards.forEach((card) => {
-      // --- IMAGE CELL ---
-      // Prefer .utility-aspect-3x2 img, fallback to first img
-      let img = null;
-      const aspectBox = card.querySelector('.utility-aspect-3x2');
-      if (aspectBox) {
-        img = aspectBox.querySelector('img');
-      }
-      if (!img) {
-        img = card.querySelector('img');
-      }
-      // Only reference existing node, do not clone or create
-      let imgCell = img ? img : '';
-
-      // --- TEXT CELL ---
-      // Try to get heading: find h3 or element with .h4-heading
+    // Each card is an <a> direct child of the grid
+    Array.from(grid.children).forEach((card) => {
+      if (card.tagName !== 'A') return;
+      // First cell: Image
+      let img = card.querySelector('.utility-aspect-3x2 img');
+      // Second cell: Text content (heading, description)
       let heading = card.querySelector('h3, .h4-heading');
-      // Some card headings are inside .utility-text-align-center
-      if (!heading) {
-        const txtAlign = card.querySelector('.utility-text-align-center');
-        if (txtAlign) {
-          heading = txtAlign.querySelector('h3, .h4-heading');
-        }
-      }
-
-      // Get description: .paragraph-sm
       let desc = card.querySelector('.paragraph-sm');
-      if (!desc) {
-        // Some are nested in .utility-text-align-center
-        const txtAlign = card.querySelector('.utility-text-align-center');
-        if (txtAlign) {
-          desc = txtAlign.querySelector('.paragraph-sm');
-        }
+      // Some card variants (centered secondary) wrap heading/desc deeper
+      if ((!heading || !desc) && card.querySelector('.utility-text-align-center')) {
+        const inner = card.querySelector('.utility-text-align-center');
+        heading = heading || inner.querySelector('h3, .h4-heading');
+        desc = desc || inner.querySelector('.paragraph-sm');
       }
-
-      // Compose text cell: heading above description
+      // Compose text cell: heading (as element), then desc (as element)
       const textCell = [];
       if (heading) textCell.push(heading);
       if (desc) textCell.push(desc);
-      // If no heading/desc found, use textContent
-      if (!heading && !desc) {
-        textCell.push(document.createTextNode(card.textContent.trim()));
-      }
-
+      // Always ensure two columns (image, text)
       cells.push([
-        imgCell, // image cell
-        textCell.length === 1 ? textCell[0] : textCell // text cell (single or array)
+        img || '',
+        textCell.length ? textCell : ''
       ]);
     });
   });
-
-  // Create table and replace element
+  // Create and replace with new block table
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

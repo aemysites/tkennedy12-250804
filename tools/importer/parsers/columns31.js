@@ -1,34 +1,27 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid that contains the columns
-  let grid = element.querySelector('.grid-layout');
-  if (!grid) {
-    // fallback: take the first direct child div with >1 children
-    grid = Array.from(element.children).find((el) => el.tagName === 'DIV' && el.children.length > 1);
-  }
-  if (!grid) {
-    // If still not found, fallback to the element itself
-    grid = element;
-  }
+  // Find the main grid container for columns
+  const grid = element.querySelector('.grid-layout');
+  if (!grid) return;
 
-  // Get the immediate children of the grid as columns
-  const columns = Array.from(grid.children).filter(col => {
-    // Consider a column non-empty if it has visible text or elements
-    return !!col.textContent.trim() || col.querySelector('*');
-  });
+  // Get the direct children of the grid (the column content blocks)
+  const columns = Array.from(grid.children);
+  if (columns.length === 0) return;
 
-  // Table header row - exactly one cell
+  // The header row should be a single cell with the block name, per the example
   const headerRow = ['Columns (columns31)'];
+  // The content row should have as many cells as columns
+  const contentRow = columns;
 
-  // Table columns row: each cell is the referenced existing column div
-  const columnsRow = columns.map(col => col);
-
-  // Compose table data: header is a single cell, then the content row
+  // Compose the table data so header is one column, then the content row is multi-column
   const cells = [
     headerRow,
-    columnsRow
+    contentRow
   ];
 
+  // Create the block table
   const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Replace the original element with the new table
   element.replaceWith(table);
 }

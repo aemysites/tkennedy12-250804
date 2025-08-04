@@ -1,25 +1,19 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find all direct child divs (the columns)
+  // Get all direct children which represent columns
   const columns = Array.from(element.querySelectorAll(':scope > div'));
-  if (!columns.length) return;
-
-  // Create the block header row as a single cell (matches markdown example)
-  // We'll set the colspan manually after the table is built
-  const cells = [
-    ['Columns (columns29)'],
-    columns,
-  ];
-
-  // Create the table block
+  // Each column contains an image
+  const contentRow = columns.map(col => col.querySelector('img'));
+  // The header row must be a single cell, spanning all columns
+  // To achieve this, pass an array with one string as the first row
+  const headerRow = ['Columns (columns29)'];
+  const cells = [headerRow, contentRow];
+  // Create the table
   const table = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Set the header cell colspan to match the number of columns
+  // Set the colspan on the header cell to span all columns
   const th = table.querySelector('th');
-  if (th && columns.length > 1) {
-    th.setAttribute('colspan', columns.length);
+  if (th && contentRow.length > 1) {
+    th.setAttribute('colspan', contentRow.length);
   }
-
-  // Replace original element with the new table
   element.replaceWith(table);
 }

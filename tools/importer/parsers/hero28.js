@@ -1,41 +1,57 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row: block name
+  // 1. Table header must match the example exactly
   const headerRow = ['Hero (hero28)'];
 
-  // Find the image for the background
-  let bgImgEl = null;
+  // 2. Get the background image (if any)
+  let bgImg = '';
+  // The image appears within a nested div structure in the first grid cell
   const grid = element.querySelector('.w-layout-grid');
   if (grid) {
-    // The background image is inside a div with class ix-parallax-scale-out-hero in one of the grid children
-    const gridChildren = grid.querySelectorAll(':scope > div');
-    for (const child of gridChildren) {
-      const img = child.querySelector('img');
+    // The first grid cell appears to contain the image
+    const gridCells = grid.querySelectorAll(':scope > div');
+    if (gridCells.length > 0) {
+      const img = gridCells[0].querySelector('img');
       if (img) {
-        bgImgEl = img;
-        break;
+        bgImg = img;
       }
     }
   }
-  const imgRow = [bgImgEl ? bgImgEl : ''];
 
-  // Find the content cell: heading, subheading, etc.
-  let contentCell = '';
+  // 3. Get the headline and other text content
+  let textContent = [];
+  // The second grid cell contains the title, etc.
   if (grid) {
-    const gridChildren = grid.querySelectorAll(':scope > div');
-    // Look for the child with class container utility-z-index-2 ...
-    for (const child of gridChildren) {
-      if (child.classList.contains('container')) {
-        contentCell = child;
-        break;
-      }
+    const gridCells = grid.querySelectorAll(':scope > div');
+    if (gridCells.length > 1) {
+      const textWrapper = gridCells[1];
+      // Gather all direct children that are not empty, preserving order
+      // For this block, an h1 and (optionally) other subheadings/CTAs
+      const children = Array.from(textWrapper.querySelectorAll(':scope > *'));
+      children.forEach(child => {
+        // Only include if visible (not an empty .button-group)
+        if (child.tagName === 'DIV' && child.classList.contains('button-group') && child.children.length === 0) {
+          return;
+        }
+        textContent.push(child);
+      });
     }
   }
-  // If not found, leave it empty
-  const contentRow = [contentCell ? contentCell : ''];
 
-  // Compose the table
-  const cells = [headerRow, imgRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Fallback: at least try to get a single heading if somehow empty
+  if (textContent.length === 0) {
+    const heading = element.querySelector('h1, h2, h3, h4, h5, h6');
+    if (heading) textContent.push(heading);
+  }
+
+  // 4. Assemble the table rows as required by the spec: [header], [image], [content]
+  const rows = [
+    headerRow,
+    [bgImg ? bgImg : ''],
+    [textContent.length ? textContent : '']
+  ];
+
+  // 5. Create the table and replace the element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

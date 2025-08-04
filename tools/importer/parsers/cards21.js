@@ -1,30 +1,37 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header as in the example
+  // Table header for Cards (cards21)
   const headerRow = ['Cards (cards21)'];
 
-  // Defensive: Ensure we have the expected card body
-  const cardBody = element.querySelector('.card-body');
-  if (!cardBody) return;
+  // Find the card body containing the card content
+  let cardBody = element.querySelector('.card-body');
+  if (!cardBody) {
+    cardBody = element.querySelector('div');
+  }
 
-  // Find the image
-  const img = cardBody.querySelector('img');
+  // Get the image for the first cell
+  const img = cardBody ? cardBody.querySelector('img') : null;
 
-  // Find the heading/title (may be missing)
-  const title = cardBody.querySelector('.h4-heading');
-
-  // Compose the text cell: should be an array of existing elements
+  // Build the text column: heading and all siblings after, as in the example
   const textCell = [];
-  if (title) textCell.push(title);
-  // No description or CTA present in this HTML, but in general we could extract more if present
+  if (cardBody) {
+    // Find heading (various selectors)
+    let heading = cardBody.querySelector('.h4-heading, h1, h2, h3, h4, h5, h6');
+    if (heading) textCell.push(heading);
+    // Add all elements after the heading (descriptions, CTA, etc)
+    let foundHeading = false;
+    cardBody.childNodes.forEach((node) => {
+      if (node === heading) {
+        foundHeading = true;
+        return;
+      }
+      if (foundHeading && node.nodeType === 1 && node !== img) {
+        textCell.push(node);
+      }
+    });
+  }
 
-  // Each card row: Image in the first cell, text content in the second cell
-  const cardRow = [img, textCell.length ? textCell : ''];
-
-  // Compose the final table structure
-  const cells = [headerRow, cardRow];
-
-  // Create and replace
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const row = [img, textCell];
+  const table = WebImporter.DOMUtils.createTable([headerRow, row], document);
   element.replaceWith(table);
 }

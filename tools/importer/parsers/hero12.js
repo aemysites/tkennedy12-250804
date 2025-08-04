@@ -1,41 +1,42 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get immediate child grid
-  const grid = element.querySelector(':scope > .w-layout-grid, :scope > div.w-layout-grid');
-  if (!grid) return;
-
-  // Get the two main columns of the feature grid
-  const [bgContainer, contentContainer] = Array.from(grid.children);
-
-  // Row 1: Header
+  // Header row: matches exactly to the example
   const headerRow = ['Hero (hero12)'];
 
-  // Row 2: Background image (optional)
-  let bgImg = null;
-  if (bgContainer) {
-    bgImg = bgContainer.querySelector('img');
-  }
-  const bgImgRow = [bgImg].filter(Boolean);
-
-  // Row 3: Hero content (headline, subhead, CTA, etc)
-  // The relevant content is nested inside .card-body in the 2nd grid cell
-  let cardBody = null;
-  if (contentContainer) {
-    const card = contentContainer.querySelector('.card-body');
-    if (card) {
-      cardBody = card;
+  // Find the background image: first .cover-image in the first grid cell
+  let backgroundImg = null;
+  const grid = element.querySelector('.w-layout-grid');
+  if (grid) {
+    const gridChildren = grid.querySelectorAll(':scope > div');
+    if (gridChildren.length > 0) {
+      backgroundImg = gridChildren[0].querySelector('img.cover-image') || null;
     }
   }
-  const contentRow = [cardBody].filter(Boolean);
+  // Row for background image (may be null)
+  const bgRow = [backgroundImg];
 
-  // Compose the table rows
-  const rows = [
+  // Find the content cell: card-body (text, icons, ctas)
+  let contentCell = null;
+  if (grid && grid.children.length > 1) {
+    // Second grid child contains the card
+    const cardContainer = grid.children[1];
+    // The card-body contains all text & buttons
+    const cardBody = cardContainer.querySelector('.card-body');
+    if (cardBody) {
+      contentCell = cardBody;
+    } else {
+      // fallback: use the cardContainer itself
+      contentCell = cardContainer;
+    }
+  }
+  const contentRow = [contentCell];
+
+  // Compose the block table
+  const cells = [
     headerRow,
-    ...(bgImgRow.length ? [bgImgRow] : []),
-    ...(contentRow.length ? [contentRow] : [])
+    bgRow,
+    contentRow
   ];
-
-  // Create and replace with the block table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

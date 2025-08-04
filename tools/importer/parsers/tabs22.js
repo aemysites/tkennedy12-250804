@@ -1,40 +1,42 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Get the tab menu (labels)
+  // Find the tab menu and tab content container
   const tabMenu = element.querySelector('.w-tab-menu');
-  if (!tabMenu) return;
-  // Each tab label is in an <a> with a <div> containing the label text
-  const tabLinks = Array.from(tabMenu.querySelectorAll('a'));
-  // Get the tab content panes
   const tabContent = element.querySelector('.w-tab-content');
-  if (!tabContent) return;
-  const tabPanes = Array.from(tabContent.querySelectorAll('.w-tab-pane'));
-  // Header row: must be a single column with 'Tabs'
-  const headerRow = ['Tabs'];
-  // Each subsequent row: [label, content]
-  const cells = [headerRow];
+  if (!tabMenu || !tabContent) return;
+
+  // Get all tab menu links (will be in order)
+  const tabLinks = Array.from(tabMenu.children).filter(el => el.matches('a,button,[role=tab]'));
+
+  // Get all tab panes
+  const tabPanes = Array.from(tabContent.children).filter(el => el.classList.contains('w-tab-pane'));
+
+  // Table header: single column with only 'Tabs'
+  // Each row: two columns [tab label, tab content]
+  const rows = [];
+  rows.push(['Tabs']);
+
   for (let i = 0; i < tabLinks.length; i++) {
-    // Label: from tabLinks[i] <div>
-    let labelText = '';
-    const labelDiv = tabLinks[i].querySelector('div');
-    if (labelDiv && labelDiv.textContent) {
-      labelText = labelDiv.textContent.trim();
+    const link = tabLinks[i];
+    let label = '';
+    const innerDiv = link.querySelector('div');
+    if (innerDiv) {
+      label = innerDiv.textContent.trim();
     } else {
-      labelText = tabLinks[i].textContent.trim();
+      label = link.textContent.trim();
     }
-    // Content: reference the main grid child of w-tab-pane or fallback to the pane itself
-    let contentElem = '';
-    if (tabPanes[i]) {
-      const grid = tabPanes[i].querySelector('.w-layout-grid');
-      if (grid) {
-        contentElem = grid;
-      } else {
-        contentElem = tabPanes[i];
-      }
+
+    let content = '';
+    const pane = tabPanes[i];
+    if (pane) {
+      // Always reference the direct child content block inside each pane (usually a grid div)
+      const mainContent = Array.from(pane.children).length === 1 ? pane.firstElementChild : pane;
+      content = mainContent;
     }
-    cells.push([labelText, contentElem]);
+    rows.push([label, content]);
   }
-  // The header row is a single cell, but subsequent rows have two cells as per the example
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  // This forms a table with 1 column in header, and 2 columns for each row
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

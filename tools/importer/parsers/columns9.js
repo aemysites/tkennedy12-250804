@@ -1,25 +1,22 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid layout inside the footer
-  const grid = element.querySelector('.w-layout-grid.grid-layout');
+  // Find the main grid containing the footer columns
+  const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  // Extract the columns (each direct child of the grid)
+  // Get all top-level columns (the immediate children of the grid)
   const columns = Array.from(grid.children);
-  if (!columns.length) return;
 
-  // The header row should be a single cell exactly matching the block name
-  const headerRow = ['Columns (columns9)'];
+  // Build the table cells: header row and content row
+  // The header must be exactly 'Columns (columns9)' per the example
+  const cells = [
+    ['Columns (columns9)'],
+    columns
+  ];
 
-  // The content row should contain as many cells as there are columns
-  const contentRow = columns;
+  // Create the block table
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
-  // Construct the block table
-  const blockTable = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
-
-  // Replace the original element
-  element.replaceWith(blockTable);
+  // Replace the original element with the new structured table
+  element.replaceWith(table);
 }

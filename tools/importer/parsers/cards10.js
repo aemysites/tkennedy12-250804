@@ -1,45 +1,32 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header must match exactly
+  // Header row as specified in the example, exactly matching: 'Cards (cards10)'
   const headerRow = ['Cards (cards10)'];
-  const cells = [headerRow];
 
-  // Get all top-level cards (direct <a> children)
-  const cards = element.querySelectorAll(':scope > a');
+  // Find all direct <a> children: each is a card
+  const cardAnchors = element.querySelectorAll(':scope > a.card-link');
 
-  cards.forEach(card => {
-    // Image is in the first child div (with class utility-aspect-3x2) inside <a>
-    const imageDiv = card.querySelector('.utility-aspect-3x2');
-    const img = imageDiv ? imageDiv.querySelector('img') : null;
+  const rows = [];
 
-    // Text content is in .utility-padding-all-1rem
+  cardAnchors.forEach((card) => {
+    // Extract the first img (image is always present)
+    const img = card.querySelector('img.card-image');
+
+    // Extract the textual content container
     const textContainer = card.querySelector('.utility-padding-all-1rem');
-    const textContent = [];
-    if (textContainer) {
-      // Tag (optional, inside .tag-group .tag)
-      const tag = textContainer.querySelector('.tag');
-      if (tag) {
-        textContent.push(tag);
-      }
-      // Heading (optional)
-      const heading = textContainer.querySelector('h3, .h4-heading');
-      if (heading) {
-        textContent.push(heading);
-      }
-      // Description (optional)
-      const desc = textContainer.querySelector('p');
-      if (desc) {
-        textContent.push(desc);
-      }
+    // Defensive: If textContainer is missing, fallback to fallback div, else empty span
+    let textCell = textContainer;
+    if (!textCell) {
+      // fallback to card itself if no textContainer (should not happen for this block)
+      textCell = document.createElement('span'); // empty fallback
     }
-
-    // Each row: [image, text content]
-    cells.push([
-      img ? img : '',
-      textContent.length > 0 ? textContent : ''
-    ]);
+    rows.push([img, textCell]);
   });
 
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  // Compose table rows
+  const tableArray = [headerRow, ...rows];
+  const block = WebImporter.DOMUtils.createTable(tableArray, document);
+
+  // Replace original element with the block table
+  element.replaceWith(block);
 }

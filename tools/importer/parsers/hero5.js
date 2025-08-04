@@ -1,47 +1,45 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid containing both text and image
-  const mainGrid = element.querySelector('.w-layout-grid.grid-layout.tablet-1-column');
-  if (!mainGrid) return;
+  // Header: block name as in the example
+  const headerRow = ['Hero (hero5)'];
 
-  // Find the prominent image (background image for the hero)
-  // Assume only one image directly under mainGrid
-  const heroImg = mainGrid.querySelector('img');
+  // Find the main image (background/visual)
+  const img = element.querySelector('img');
+  const imageRow = [img || ''];
 
-  // Find the text content area (grid-layout.container)
-  const container = mainGrid.querySelector('.w-layout-grid.container');
-  let section = null;
-  if (container) {
-    // The section with heading, paragraph, and buttons
-    section = container.querySelector('.section');
+  // Find the main content area (title, body, CTAs)
+  let contentElements = [];
+  // The grid that contains the text and CTAs
+  const gridContainer = element.querySelector('.grid-layout.container');
+  let sectionContent = null;
+  if (gridContainer) {
+    sectionContent = gridContainer.querySelector('.section');
   }
-
-  const contentEls = [];
-  if (section) {
-    // Heading (grab any heading tag)
-    const heading = section.querySelector('h1, h2, h3, h4, h5, h6');
-    if (heading) contentEls.push(heading);
-    // Paragraph(s)
-    const richText = section.querySelector('.rich-text, .rich-text.paragraph-lg');
-    if (richText) contentEls.push(richText);
-    // Button group
-    const buttonGroup = section.querySelector('.button-group');
-    if (buttonGroup) contentEls.push(buttonGroup);
+  if (sectionContent) {
+    // Title
+    const h2 = sectionContent.querySelector('h2');
+    if (h2) contentElements.push(h2);
+    // Paragraph (subtitle/desc)
+    // Prefer rich-text/container, but fallback to any <p>
+    let subtitle = sectionContent.querySelector('.rich-text, .w-richtext');
+    if (subtitle) {
+      contentElements.push(subtitle);
+    } else {
+      // Collect all direct paragraph children
+      sectionContent.querySelectorAll(':scope > p').forEach((p) => {
+        contentElements.push(p);
+      });
+    }
+    // CTAs (button group)
+    const ctaGroup = sectionContent.querySelector('.button-group');
+    if (ctaGroup) contentElements.push(ctaGroup);
   }
+  const contentRow = [contentElements.length > 0 ? contentElements : ''];
 
-  // Compose table rows
-  const headerRow = ['Hero (hero5)']; // Must match example exactly
-  const imageRow = [heroImg ? heroImg : '']; // Always a single cell, even if empty
-  const contentRow = [contentEls]; // All text/button content in one cell as array
+  // Compose rows
+  const rows = [headerRow, imageRow, contentRow];
 
-  // Compose the block table data
-  const cells = [
-    headerRow,
-    imageRow,
-    contentRow
-  ];
-
-  // Create and replace
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Create table and replace element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

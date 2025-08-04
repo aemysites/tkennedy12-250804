@@ -1,40 +1,43 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header must match exactly
-  const headerRow = ['Columns (columns36)'];
-
-  // Get the immediate children of the main grid: left (text/buttons), right (images)
+  // Find the container that holds the main grid
   const container = element.querySelector('.container');
   if (!container) return;
-  const grid = container.querySelector('.grid-layout');
+  // The main grid containing two columns
+  const grid = container.querySelector('.w-layout-grid.grid-layout');
   if (!grid) return;
-  const children = grid.querySelectorAll(':scope > div');
-  if (children.length < 2) return;
+  const gridCols = Array.from(grid.children);
 
-  // Left column: preserve all structure (heading, paragraph, buttons)
-  const leftContent = children[0];
+  // The left column: text and buttons
+  const leftCol = gridCols[0];
+  // The right column: grid of images
+  const rightCol = gridCols[1];
 
-  // Right column: get the grid of images
-  let rightContent = null;
-  const nestedGrid = children[1].querySelector('.grid-layout');
-  if (nestedGrid) {
-    // For semantic fidelity and resilience, include the grid itself (with all images)
-    rightContent = nestedGrid;
-  } else {
-    // fallback: all images from right column
-    const imgs = children[1].querySelectorAll('img');
-    if (imgs.length > 0) {
-      rightContent = Array.from(imgs);
-    } else {
-      // fallback: reference the whole right column
-      rightContent = children[1];
+  // Get all content from leftCol
+  let leftContent = [];
+  if (leftCol) {
+    leftContent = Array.from(leftCol.childNodes).filter(node => {
+      // Only include elements or non-empty text nodes
+      return (node.nodeType === Node.ELEMENT_NODE) ||
+             (node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    });
+  }
+
+  // Get images from the right grid
+  let rightContent = [];
+  if (rightCol) {
+    const imgGrid = rightCol.querySelector('.w-layout-grid');
+    if (imgGrid) {
+      rightContent = Array.from(imgGrid.children).filter(el => el.tagName === 'IMG');
     }
   }
 
-  const contentRow = [leftContent, rightContent];
-
-  const cells = [headerRow, contentRow];
-
+  // Build the columns block table
+  // Header row must be a single cell to match the example
+  const cells = [
+    ['Columns (columns36)'],
+    [leftContent, rightContent]
+  ];
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

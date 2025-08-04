@@ -1,3 +1,5 @@
+/* Fixed CSS Code */
+/* stylelint-disable no-descending-specificity */
 .columns > div {
   display: flex;
   flex-direction: column;
@@ -31,7 +33,6 @@
     order: unset;
   }
 }
-
 
 .columns.columns1 {
   background: #FAFAF6;
@@ -169,7 +170,6 @@
   }
 }
 
-
 .columns.columns2 > div {
   display: grid;
   grid-template-columns: 1fr 1.22fr 1.22fr;
@@ -181,8 +181,7 @@
   margin: 0 auto;
 }
 
-/* Responsive: stack columns vertically on small screens */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .columns.columns2 > div {
     display: flex;
     flex-direction: column;
@@ -193,7 +192,6 @@
   }
 }
 
-/* --- Left Column: Image & headline --- */
 .columns.columns2 .columns-img-col {
   grid-column: 1 / 2;
   display: flex;
@@ -228,10 +226,9 @@
   line-height: 1.13;
   text-decoration: none;
   text-align: left;
-  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
-/* --- Card stack (middle column) --- */
 .columns.columns2 > div > div > p:nth-of-type(1),
 .columns.columns2 > div > div > p:nth-of-type(2),
 .columns.columns2 > div > div > h3:nth-of-type(1),
@@ -245,7 +242,6 @@
   margin-right: auto;
 }
 
-/* Card images: make both cards' images the same width */
 .columns.columns2 > div > div > p:nth-of-type(1) picture img,
 .columns.columns2 > div > div > p:nth-of-type(4) picture img {
   border-radius: 16px;
@@ -257,7 +253,6 @@
   margin-bottom: 0.6rem;
 }
 
-/* Card tag (button as label) */
 .columns.columns2 > div > div > p.button-container .button {
   background: #f5f5f5;
   color: #252525;
@@ -269,7 +264,7 @@
   border-radius: 1.1em;
   line-height: 1.23;
   padding: 0.19em 1.05em;
-  margin: 0 0 0.32em 0;
+  margin: 0 0 0.32em;
   border: none;
   box-shadow: none;
   display: inline-block;
@@ -280,7 +275,7 @@
   font-weight: 600;
   font-size: 1.21rem;
   color: #181818;
-  margin: 0.12em 0 0.13em 0;
+  margin: 0.12em 0 0.13em;
   letter-spacing: -0.01em;
   line-height: 1.12;
   text-transform: none;
@@ -302,18 +297,16 @@
   line-height: 1.52;
   letter-spacing: 0;
   text-transform: none;
-  margin: 0 0 0.15em 0;
+  margin: 0 0 0.15em;
   text-align: left;
   white-space: normal;
   overflow: visible;
 }
 
-/* Reduce vertical gap between the two cards */
 .columns.columns2 > div > div > p:nth-of-type(4) {
   margin-top: 0.7rem;
 }
 
-/* --- List stack (right column) --- */
 .columns.columns2 > div > div > h3:nth-of-type(n+3),
 .columns.columns2 > div > div > h3:nth-of-type(n+3) + p.button-container {
   grid-column: 3 / 4;
@@ -348,7 +341,6 @@
   text-decoration: none;
 }
 
-/* List item description: less prominent, allow wrapping */
 .columns.columns2 > div > div > h3:nth-of-type(n+3) + p.button-container .button {
   color: #7d7d7d;
   font-family: var(--body-font-family);
@@ -367,13 +359,11 @@
   overflow: visible;
 }
 
-/* Remove margin from last list item */
 .columns.columns2 > div > div > h3:last-of-type + p.button-container {
   margin-bottom: 0;
 }
 
-/* --- Column stacking for mobile --- */
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .columns.columns2 > div > div > *,
   .columns.columns2 > div > div > h3,
   .columns.columns2 > div > div > p.button-container,
@@ -387,4 +377,133 @@
 
 .columns.columns2 > div > div {
   align-items: flex-start;
+}
+
+.columns.columns3 {
+  background: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+.columns.columns3 > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 72px 0;
+  gap: 24px;
+  box-sizing: border-box;
+  min-height: 260px;
+}
+
+.columns.columns3 > div > div:first-child {
+  flex: 0 1 540px;
+  max-width: 540px;
+  min-width: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.columns.columns3 > div > div:first-child > h2 {
+  font-family: var(--heading-font-family), Arial, sans-serif;
+  font-weight: 400;
+  font-size: 2.7rem;
+  letter-spacing: 0.015em;
+  line-height: 1.11;
+  color: #000;
+  margin: 0 0 18px;
+  padding: 0;
+  overflow-wrap: break-word;
+}
+
+.columns.columns3 > div > div:first-child > p {
+  color: #444;
+  font-size: 1rem;
+  line-height: 1.53;
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.columns.columns3 > div > div:last-child {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  margin: 0;
+}
+
+.columns.columns3 > div > div:last-child > p {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 0;
+  align-items: center;
+}
+
+.columns.columns3 > div > div:last-child a {
+  display: block;
+  width: 200px;
+  padding: 14px 0;
+  background: #fff;
+  border: 1.5px solid #000;
+  border-radius: 999px;
+  color: #000;
+  font-size: 1rem;
+  text-align: center;
+  text-decoration: none;
+  font-family: var(--body-font-family);
+  font-weight: 400;
+  box-sizing: border-box;
+  transition: border-color 0.2s, background 0.2s;
+  line-height: 1.2;
+  margin: 0;
+  outline: none;
+}
+
+.columns.columns3 > div > div:last-child a:first-child {
+  border-bottom: 2.5px solid #FFEB3B;
+}
+
+.columns.columns3 > div > div:last-child a:hover,
+.columns.columns3 > div > div:last-child a:focus {
+  background: #f6f6f6;
+  border-color: #222;
+  text-decoration: none;
+}
+
+@media (width <= 899px) {
+  .columns.columns3 > div {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 32px 0 40px;
+    gap: 24px;
+    min-height: unset;
+  }
+
+  .columns.columns3 > div > div:first-child,
+  .columns.columns3 > div > div:last-child {
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .columns.columns3 > div > div:last-child {
+    margin-top: 28px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .columns.columns3 > div > div:last-child > p {
+    gap: 14px;
+  }
 }

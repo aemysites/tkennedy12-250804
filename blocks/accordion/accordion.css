@@ -1,8 +1,6 @@
 .accordion details {
   border: 1px solid #dadada;
 }
-
-/* stylelint-disable-next-line no-descending-specificity */
 .accordion details + details {
   margin-top: 24px;
 }
@@ -58,4 +56,116 @@
 .accordion details[open] .accordion-item-body {
   border-top: 1px solid #dadada;
   background-color: var(--background-color);
+}
+
+
+/* Force all details elements to be open for static FAQ layout preview (non-standard, for design parity only) */
+.accordion.accordion13 details {
+  /* This attribute selector forces the style ONLY IF the attribute is present. 
+     To visually preview the layout, add open attributes in your dev HTML. */
+}
+.accordion.accordion13 details,
+.accordion.accordion13 details[open] {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  border: none;
+  border-bottom: 1px solid #d3d3d3;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  min-height: 36px;
+}
+
+.accordion.accordion13 details:last-child,
+.accordion.accordion13 details[open]:last-child {
+  border-bottom: none;
+}
+
+/* Question (left column) */
+.accordion.accordion13 summary {
+  flex: 0 0 40%;
+  max-width: 40%;
+  min-width: 160px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 12px 20px 12px 0;
+  margin: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  cursor: default;
+  pointer-events: none;
+  list-style: none;
+  position: static;
+  font-family: 'Orbitron', 'Syncopate', 'Syncopate Fallback', Arial, sans-serif;
+  text-transform: uppercase;
+  font-size: 18px;
+  color: #757575;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.accordion.accordion13 summary::-webkit-details-marker,
+.accordion.accordion13 summary::marker {
+  display: none;
+}
+.accordion.accordion13 details summary::after {
+  display: none;
+}
+.accordion.accordion13 .accordion-item-label p {
+  margin: 0;
+}
+
+/* Answer (right column) */
+.accordion.accordion13 details[open] .accordion-item-body,
+.accordion.accordion13 details .accordion-item-body {
+  flex: 1 1 60%;
+  max-width: 60%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-start;
+  padding: 12px 0 12px 0;
+  color: #333333;
+  font-family: Arial, var(--body-font-family), sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+  word-break: break-word;
+  white-space: normal;
+}
+.accordion.accordion13 .accordion-item-body p {
+  margin: 0;
+}
+
+/* Remove summary highlight on open/hover/focus */
+.accordion.accordion13 details[open] summary,
+.accordion.accordion13 details summary:focus,
+.accordion.accordion13 details summary:hover {
+  background: transparent;
+}
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 700px) {
+  .accordion.accordion13 details,
+  .accordion.accordion13 details[open] {
+    flex-direction: column;
+    min-height: 0;
+  }
+  .accordion.accordion13 summary,
+  .accordion.accordion13 .accordion-item-body {
+    max-width: 100%;
+    flex-basis: auto;
+    padding-right: 0;
+  }
+  .accordion.accordion13 summary {
+    padding-bottom: 4px;
+  }
+  .accordion.accordion13 .accordion-item-body {
+    padding-top: 0;
+    font-size: 12px;
+  }
 }

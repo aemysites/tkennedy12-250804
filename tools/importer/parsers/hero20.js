@@ -1,40 +1,52 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Header row for the block table
+  // Header row
   const headerRow = ['Hero (hero20)'];
 
-  // 2. Background images cell (2nd row)
-  // Find the main grid that holds background images
-  let bgImagesCell = '';
-  const grid = element.querySelector('.grid-layout.desktop-3-column.utility-min-height-100dvh');
+  // 2nd row: Background Images (all <img> under hero background grid)
+  // Locate the grid containing all images
+  const grid = element.querySelector('.ix-hero-scale-3x-to-1x .grid-layout');
+  let images = [];
   if (grid) {
-    const imgEls = grid.querySelectorAll('img');
-    if (imgEls.length > 0) {
-      // Use a container div to hold all images for layout preservation
-      const bgDiv = document.createElement('div');
-      imgEls.forEach(img => bgDiv.appendChild(img));
-      bgImagesCell = bgDiv;
+    images = Array.from(grid.querySelectorAll('img'));
+  }
+  // Place all images in a <div> for layout preservation
+  let bgCell;
+  if (images.length) {
+    const bgDiv = document.createElement('div');
+    images.forEach(img => bgDiv.appendChild(img));
+    bgCell = bgDiv;
+  } else {
+    bgCell = '';
+  }
+
+  // 3rd row: Content (heading, subheading, CTAs)
+  // Find the container with text content
+  const contentContainer = element.querySelector('.ix-hero-scale-3x-to-1x-content .container');
+  let contentCell = '';
+  if (contentContainer) {
+    // Reference all existing structural children (h1, p, buttons), preserving order
+    const nodes = Array.from(contentContainer.childNodes).filter(node => {
+      // Only include element nodes (skip whitespace text nodes)
+      return node.nodeType === Node.ELEMENT_NODE;
+    });
+    if (nodes.length === 1) {
+      // Single container child (unlikely but possible)
+      contentCell = nodes[0];
+    } else if (nodes.length > 1) {
+      // Wrap all relevant children in a <div> for combined content
+      const contentDiv = document.createElement('div');
+      nodes.forEach(child => contentDiv.appendChild(child));
+      contentCell = contentDiv;
     }
   }
 
-  // 3. Content cell (3rd row)
-  // Find the content area that contains heading, subheading, CTA
-  let contentCell = '';
-  // The content is in the .ix-hero-scale-3x-to-1x-content node, inside a .container
-  const contentWrapper = element.querySelector('.ix-hero-scale-3x-to-1x-content .container');
-  if (contentWrapper) {
-    // We reference the existing element, do not clone or re-create
-    contentCell = contentWrapper;
-  }
-
-  // 4. Compose the rows for the block table
   const cells = [
     headerRow,
-    [bgImagesCell],
-    [contentCell],
+    [bgCell],
+    [contentCell]
   ];
 
-  // 5. Create the block table and replace the original element
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(table);
 }

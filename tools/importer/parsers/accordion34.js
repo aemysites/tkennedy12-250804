@@ -1,39 +1,53 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Build the table rows array
+  // Prepare the table rows array
   const rows = [];
-  // Header row: single cell with the block name
+  // Header row from the example (must be exact)
   rows.push(['Accordion (accordion34)']);
 
-  // Find all direct accordions
-  const accordions = element.querySelectorAll(':scope > .accordion');
+  // Find all accordion items (should be immediate children with class 'accordion')
+  const items = element.querySelectorAll(':scope > .accordion');
 
-  accordions.forEach(acc => {
-    // Title: .w-dropdown-toggle > .paragraph-lg (fallback to toggle if not found)
-    let titleElem = null;
-    const toggle = acc.querySelector('.w-dropdown-toggle');
+  items.forEach((item) => {
+    // Title cell: element inside .w-dropdown-toggle with class .paragraph-lg
+    let titleCell = '';
+    const toggle = item.querySelector('.w-dropdown-toggle');
     if (toggle) {
-      titleElem = toggle.querySelector('.paragraph-lg') || toggle;
-    }
-
-    // Content: .accordion-content > .utility-padding-all-1rem > .w-richtext (fallback to nav if not found)
-    let contentElem = null;
-    const nav = acc.querySelector('.accordion-content');
-    if (nav) {
-      const utilityDiv = nav.querySelector('div');
-      if (utilityDiv) {
-        contentElem = utilityDiv.querySelector('.w-richtext') || utilityDiv;
+      const paragraphLg = toggle.querySelector('.paragraph-lg');
+      if (paragraphLg) {
+        titleCell = paragraphLg;
       } else {
-        contentElem = nav;
+        // fallback: use toggle itself if .paragraph-lg missing
+        titleCell = toggle;
       }
     }
-
-    if (titleElem && contentElem) {
-      rows.push([titleElem, contentElem]);
+    // Content cell: find the content inside nav.accordion-content
+    let contentCell = '';
+    const nav = item.querySelector('nav.accordion-content');
+    if (nav) {
+      // Look for .rich-text, else use the first meaningful descendant
+      let found = null;
+      // Check for a .rich-text descendant
+      found = nav.querySelector('.rich-text');
+      if (!found) {
+        // fallback: use the nav's first child with content
+        for (const child of nav.children) {
+          if (child.textContent.trim()) {
+            found = child;
+            break;
+          }
+        }
+        if (!found && nav.textContent.trim()) {
+          found = nav;
+        }
+      }
+      contentCell = found || nav;
     }
+    rows.push([titleCell, contentCell]);
   });
 
-  // Create the table and replace the element
+  // Create the block table
   const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Replace the original element with the new table block
   element.replaceWith(table);
 }

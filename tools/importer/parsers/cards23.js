@@ -1,40 +1,38 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Prepare the header row as in the example
   const headerRow = ['Cards (cards23)'];
-  const cells = [headerRow];
-  // Find all tab panes inside the provided element
-  const tabPanes = element.querySelectorAll('.w-tab-pane');
-  tabPanes.forEach((tabPane) => {
-    // Find the grid of cards
-    const grid = tabPane.querySelector('.w-layout-grid');
+  const rows = [headerRow];
+  // Find all tab panes (each contains a grid of cards)
+  const panes = element.querySelectorAll('[class*="w-tab-pane"]');
+  panes.forEach((pane) => {
+    const grid = pane.querySelector('.w-layout-grid');
     if (!grid) return;
-    // Each card is an <a> direct child of the grid
-    Array.from(grid.children).forEach((card) => {
-      if (card.tagName !== 'A') return;
-      // First cell: Image
-      let img = card.querySelector('.utility-aspect-3x2 img');
-      // Second cell: Text content (heading, description)
-      let heading = card.querySelector('h3, .h4-heading');
+    // Each direct child of the grid is a card anchor
+    const cards = Array.from(grid.children).filter((child) => child.tagName === 'A');
+    cards.forEach((card) => {
+      // Image: first img element in the card
+      let imgEl = card.querySelector('img');
+      // Text: try to find a heading and its description
+      let textCell = document.createElement('div');
+      // Try to find the title
+      let title = card.querySelector('h3, .h4-heading');
+      if (title) textCell.appendChild(title);
+      // Try to find the description
       let desc = card.querySelector('.paragraph-sm');
-      // Some card variants (centered secondary) wrap heading/desc deeper
-      if ((!heading || !desc) && card.querySelector('.utility-text-align-center')) {
-        const inner = card.querySelector('.utility-text-align-center');
-        heading = heading || inner.querySelector('h3, .h4-heading');
-        desc = desc || inner.querySelector('.paragraph-sm');
+      if (desc) textCell.appendChild(desc);
+      // Make sure at least something is added
+      if (!title && !desc) {
+        // fallback: use entire card minus image if available
+        Array.from(card.childNodes).forEach((node) => {
+          if (!imgEl || !imgEl.contains(node)) textCell.appendChild(node);
+        });
       }
-      // Compose text cell: heading (as element), then desc (as element)
-      const textCell = [];
-      if (heading) textCell.push(heading);
-      if (desc) textCell.push(desc);
-      // Always ensure two columns (image, text)
-      cells.push([
-        img || '',
-        textCell.length ? textCell : ''
+      rows.push([
+        imgEl ? imgEl : '',
+        textCell.childNodes.length > 0 ? textCell : ''
       ]);
     });
   });
-  // Create and replace with new block table
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

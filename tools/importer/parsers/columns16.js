@@ -1,19 +1,37 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid-layout div, which contains the columns
-  const grid = element.querySelector('.grid-layout');
+  // Find the grid container containing the columns
+  const grid = element.querySelector('.w-layout-grid');
   if (!grid) return;
 
-  // Each direct child of .grid-layout is a column
+  // Get the immediate grid children (each is a column block)
   const columnDivs = Array.from(grid.children);
-  // For each column, use its full content (not just the image), preserving any content structure
-  const columns = columnDivs.map(col => col);
 
-  // Compose table: first row is single-cell header, second row is all columns
-  const headerRow = ['Columns (columns16)']; // exactly one cell in the header row
-  const contentRow = columns; // as many columns as found
+  // For each column, extract *all* its visible content (not just images)
+  // Most columns have one direct content child, but could vary, so collect all children
+  const columnCells = columnDivs.map(col => {
+    // Get all nodes inside this column (usually a single div, but could be more)
+    const contentChildren = Array.from(col.children);
+    if (contentChildren.length === 1) {
+      // If only one child, return it directly for resilience
+      return contentChildren[0];
+    } else if (contentChildren.length > 1) {
+      // If multiple children, return all as an array
+      return contentChildren;
+    } else {
+      // If there are no children, fallback to the column itself
+      return col;
+    }
+  });
+
+  // Header as a single column (matches example)
+  const headerRow = ['Columns (columns16)'];
+  // Second row: as many columns as there are columns in the source grid
+  const contentRow = columnCells;
   const cells = [headerRow, contentRow];
 
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  // Create the block table
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  // Replace the original element with the block
+  element.replaceWith(block);
 }

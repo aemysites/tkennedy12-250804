@@ -1,31 +1,57 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Define the header row as specified
+  // Table header as per instructions
   const headerRow = ['Cards (cards33)'];
+  const rows = [headerRow];
+  // Find all top-level cards (each <a> inside element)
+  const cards = element.querySelectorAll(':scope > a');
 
-  // Each card is a direct child <a> of the main grid container
-  const cardAnchors = Array.from(element.querySelectorAll(':scope > a'));
-
-  const rows = cardAnchors.map((cardAnchor) => {
-    // Image is always present and is the first <img> in each card
-    const img = cardAnchor.querySelector('img');
-
-    // The text content is the second main block inside the card structure
-    // It is always the first <div> sibling of the <img>, inside the grid layout div
-    let textDiv;
-    const mainGrid = cardAnchor.querySelector('.w-layout-grid');
-    if (mainGrid) {
-      // Find the <div> that is NOT the <img>
-      const children = Array.from(mainGrid.children);
-      textDiv = children.find((node) => node.tagName === 'DIV');
+  cards.forEach((card) => {
+    // Card contents: image and text
+    // Get the first image under the grid layout in the card
+    const cardGrid = card.querySelector(':scope > div');
+    let img = cardGrid ? cardGrid.querySelector('img') : null;
+    // Text container is the div after image
+    let textDiv = null;
+    if (cardGrid) {
+      // Find all child divs, usually first is for image, second for text
+      const divs = cardGrid.querySelectorAll(':scope > div');
+      if (divs.length) {
+        // Generally last div holds the text
+        textDiv = divs[divs.length - 1];
+      }
     }
-    // Fallback: use the cardAnchor itself if structure varies
-    if (!textDiv) textDiv = cardAnchor;
-
-    return [img, textDiv];
+    // Build a fragment for text cell
+    const frag = document.createDocumentFragment();
+    if (textDiv) {
+      // Optional: tag and read time (typically a flex row)
+      const meta = textDiv.querySelector('.flex-horizontal');
+      if (meta) frag.appendChild(meta);
+      // Heading (h3/h4)
+      const heading = textDiv.querySelector('h3, .h4-heading, h4, h2');
+      if (heading) frag.appendChild(heading);
+      // Description paragraph
+      const desc = textDiv.querySelector('p');
+      if (desc) frag.appendChild(desc);
+      // CTA: look for last div with 'Read', after the <p>
+      // Only include the CTA as a link if it exists
+      const ctaDivs = Array.from(textDiv.querySelectorAll(':scope > div'));
+      const ctaDiv = ctaDivs.find(d => d.textContent.trim().toLowerCase() === 'read');
+      if (ctaDiv) {
+        const link = document.createElement('a');
+        link.href = card.getAttribute('href') || '#';
+        link.textContent = ctaDiv.textContent.trim();
+        frag.appendChild(link);
+      }
+    }
+    // Add row: [image, text content]
+    // If no image, put empty string (should not happen in this block)
+    rows.push([
+      img || '',
+      frag
+    ]);
   });
-
-  const tableCells = [headerRow, ...rows];
-  const table = WebImporter.DOMUtils.createTable(tableCells, document);
+  // Build table and replace original element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

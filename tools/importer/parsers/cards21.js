@@ -1,37 +1,41 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header for Cards (cards21)
+  // Cards (cards21) block
   const headerRow = ['Cards (cards21)'];
 
-  // Find the card body containing the card content
-  let cardBody = element.querySelector('.card-body');
-  if (!cardBody) {
-    cardBody = element.querySelector('div');
-  }
+  // Find card container (works for the provided nested structure)
+  // Robust for future cards: aggregate all .card-body elements under this block
+  const cardBodies = element.querySelectorAll('.card-body');
+  const rows = [headerRow];
 
-  // Get the image for the first cell
-  const img = cardBody ? cardBody.querySelector('img') : null;
+  cardBodies.forEach(cardBody => {
+    // Find the image: first <img> in the card
+    const img = cardBody.querySelector('img');
 
-  // Build the text column: heading and all siblings after, as in the example
-  const textCell = [];
-  if (cardBody) {
-    // Find heading (various selectors)
-    let heading = cardBody.querySelector('.h4-heading, h1, h2, h3, h4, h5, h6');
-    if (heading) textCell.push(heading);
-    // Add all elements after the heading (descriptions, CTA, etc)
-    let foundHeading = false;
-    cardBody.childNodes.forEach((node) => {
-      if (node === heading) {
-        foundHeading = true;
-        return;
+    // Find the heading: .h4-heading (may be missing in other cards)
+    const heading = cardBody.querySelector('.h4-heading');
+
+    // Find supporting description (e.g., <p>, <div> after the heading, if present)
+    // In this HTML, there is no description, but let's check for possible text after heading.
+    const textContentElements = [];
+    if (heading) textContentElements.push(heading);
+    // Check for any description nodes after the heading
+    let node = heading ? heading.nextSibling : cardBody.firstChild;
+    while (node) {
+      if (node.nodeType === 1 && node !== img) { // ELEMENT_NODE and not the image
+        textContentElements.push(node);
       }
-      if (foundHeading && node.nodeType === 1 && node !== img) {
-        textCell.push(node);
-      }
-    });
-  }
+      node = node.nextSibling;
+    }
+    // Fallback: if only heading is present, that's fine
+    // If heading is missing, try to use cardBody.textContent (shouldn't happen in this sample)
 
-  const row = [img, textCell];
-  const table = WebImporter.DOMUtils.createTable([headerRow, row], document);
+    rows.push([
+      img,
+      textContentElements.length ? textContentElements : ''
+    ]);
+  });
+
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

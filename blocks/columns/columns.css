@@ -980,8 +980,6 @@
   padding: 0;
   position: relative;
 }
-
-/* Responsive: stack vertically below 900px */
 @media (max-width: 900px) {
   .columns.columns15 .columns > div {
     flex-direction: column;
@@ -989,8 +987,6 @@
     gap: 32px;
   }
 }
-
-/* Text column: left/top-aligned and not vertically centered */
 .columns.columns15 .columns > div > div:first-child {
   display: flex;
   flex-direction: column;
@@ -1002,8 +998,6 @@
   align-self: flex-start;
   padding-top: 0;
 }
-
-/* Heading: bolder, more compact, slightly more open line-height */
 .columns.columns15 h1 {
   font-family: 'Syncopate', 'Syncopate Fallback', 'sans-serif';
   font-size: 3rem;
@@ -1065,8 +1059,6 @@
   border-color: #181a1a;
   text-decoration: none;
 }
-
-/* Image column: vertically center image visually to heading using margin-top "fudge" */
 .columns.columns15 .columns-img-col {
   display: flex;
   align-items: flex-start;
@@ -1076,7 +1068,7 @@
   width: 100%;
   border-radius: 24px;
   overflow: hidden;
-  margin: 40px 0 0 0; /* push image down to align midline with heading */
+  margin: 40px 0 0 0;
   background: none;
   box-shadow: none;
   flex: 1 1 480px;
@@ -1101,8 +1093,6 @@
     margin-top: 0;
   }
 }
-
-/* Make image visually wider and more landscape, and with a soft shadow */
 .columns.columns15 .columns-img-col picture,
 .columns.columns15 .columns-img-col img {
   width: 100%;
@@ -1120,5 +1110,99 @@
   .columns.columns15 .columns-img-col img {
     border-radius: 20px;
     aspect-ratio: unset;
+  }
+}
+
+
+.columns.columns16 {
+  background: #fff;
+  padding: 0;
+}
+
+/* Restore image columns if hidden by any previous CSS */
+.columns.columns16 .columns-img-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  overflow: visible;
+  margin: 0;
+  padding: 0;
+  width: 210px;
+  min-width: 0;
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.25s;
+}
+
+/* Always show all columns regardless of previous display: none */
+.columns.columns16 > div > .columns-img-col {
+  display: flex;
+}
+
+/* Main flex row for images, centered horizontally and vertically */
+.columns.columns16 > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+  padding: 48px 0;
+  box-sizing: border-box;
+  background: #fff;
+  flex-wrap: nowrap;
+}
+
+/* Make sure images don't have border radius and use their natural aspect ratio */
+.columns.columns16 .columns-img-col picture,
+.columns.columns16 .columns-img-col img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  aspect-ratio: unset;
+}
+
+/* Apply playful rotation to each image for a dynamic look */
+.columns.columns16 .columns-img-col:nth-child(1) { transform: rotate(-6deg); }
+.columns.columns16 .columns-img-col:nth-child(2) { transform: rotate(4deg); }
+.columns.columns16 .columns-img-col:nth-child(3) { transform: rotate(-3deg); }
+.columns.columns16 .columns-img-col:nth-child(4) { transform: rotate(5deg); }
+.columns.columns16 .columns-img-col:nth-child(5) { transform: rotate(-2deg); }
+.columns.columns16 .columns-img-col:nth-child(6) { transform: rotate(4deg); }
+
+/* Responsive: allow horizontal scrolling for overflow on narrow screens */
+@media (max-width: 900px) {
+  .columns.columns16 > div {
+    gap: 20px;
+    padding: 24px 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  .columns.columns16 .columns-img-col {
+    width: 140px;
+    min-width: 140px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .columns.columns16 > div {
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .columns.columns16 .columns-img-col {
+    width: 90vw;
+    min-width: 0;
+    max-width: 100%;
   }
 }

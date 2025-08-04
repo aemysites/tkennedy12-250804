@@ -1,33 +1,29 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Defensive: find the container with the columns content
-  const container = element.querySelector('.container');
-  if (!container) return;
-  const grid = container.querySelector('.grid-layout');
+  // Find the grid with the 2 main columns
+  const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  // The structure is:
-  // grid.children[0]: left large card (feature)
-  // grid.children[1]: right-top stack (contains 2 cards)
-  // grid.children[2]: right-bottom stack (contains 6 cards with dividers)
-  // We'll have two columns: left is the feature, right is the stack of cards
+  // The left main column: the first <a> child of grid
+  const leftMain = grid.children[0];
+  // The right has two vertical flex containers, each containing multiple <a> blocks with dividers
+  const rightUpper = grid.children[1];
+  const rightLower = grid.children[2];
 
-  // Left column: the feature card (an <a> with image, tag, heading, and p)
-  const leftCol = grid.children[0];
+  // Defensive: Ensure these exist
+  if (!leftMain || !rightUpper || !rightLower) return;
 
-  // Right column: create a container <div> and append all children of the two right stack columns, preserving order
-  const rightColDiv = document.createElement('div');
-  [grid.children[1], grid.children[2]].forEach(stack => {
-    Array.from(stack.children).forEach(el => {
-      rightColDiv.appendChild(el);
-    });
-  });
+  // Assemble the right column (stacked blocks)
+  const rightColWrapper = document.createElement('div');
+  rightColWrapper.append(rightUpper, rightLower);
 
-  // Column cell definitions: reference original element nodes directly
-  const headerRow = ['Columns (columns2)'];
-  const contentRow = [leftCol, rightColDiv];
+  // Build the table according to the structure: 2 columns
+  // Header row matches block name exactly
+  const table = WebImporter.DOMUtils.createTable([
+    ['Columns (columns2)'],
+    [leftMain, rightColWrapper]
+  ], document);
 
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Replace the section with the Columns block table
   element.replaceWith(table);
 }

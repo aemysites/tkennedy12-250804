@@ -1,43 +1,19 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid layout that contains the column content
-  const grid = element.querySelector('.grid-layout, .w-layout-grid');
-  let colItems = [];
-
-  if (grid) {
-    // Get immediate children (divs/images) for columns
-    colItems = Array.from(grid.children);
-  } else {
-    // fallback: try to get from container, or section directly
-    const container = element.querySelector('.container');
-    if (container) {
-      colItems = Array.from(container.children);
-    } else {
-      colItems = Array.from(element.children);
-    }
-  }
-
-  // Defensive: filter out empty text nodes or nodes with no actual content
-  colItems = colItems.filter(node => {
-    if (node.nodeType !== 1) return false; // element only
-    if (node.tagName === 'DIV' && !node.textContent.trim() && !node.querySelector('img, picture')) return false;
-    if (node.tagName === 'IMG' && !node.src) return false;
-    return true;
-  });
-
-  // The example expects two columns: content and image.
-  // If there are more than two, only use the first two.
-  const contentCells = colItems.slice(0, 2);
-
-  // Table header as required in guidelines and per example
+  // Find the main grid container that holds the columns
+  const grid = element.querySelector('.w-layout-grid');
+  if (!grid) return;
+  // Get the direct grid children for the columns
+  const columns = Array.from(grid.children);
+  // Defensive: skip empty columns (shouldn't happen for valid blocks)
+  if (columns.length < 2) return;
+  // Create header row
   const headerRow = ['Columns (columns27)'];
-
-  // Compose the table with header and one row of two columns
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentCells
-  ], document);
-
-  // Replace the original element with the generated table
+  // Create content row: reference *existing* elements, not their HTML or clones
+  const contentRow = [columns[0], columns[1]];
+  // Compose the table
+  const cells = [headerRow, contentRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Replace the entire section element with the new table
   element.replaceWith(table);
 }

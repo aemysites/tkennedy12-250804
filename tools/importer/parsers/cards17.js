@@ -1,25 +1,17 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row exactly as in the example
+  // The header row must have exactly one column
   const headerRow = ['Cards (cards17)'];
-
-  // Each card is a .utility-aspect-1x1 div with an image only; text cell should be truly empty, not a blank string
-  const cardDivs = element.querySelectorAll(':scope > .utility-aspect-1x1');
-  const rows = Array.from(cardDivs).map(div => {
-    const img = div.querySelector('img');
-    return [img]; // Only one cell per row: just the image, since there is no text content in the HTML
+  const cardRows = [];
+  const cardDivs = element.querySelectorAll(':scope > div');
+  cardDivs.forEach(cardDiv => {
+    const img = cardDiv.querySelector('img');
+    // Each card is a row with exactly two columns: image, then text content (if any)
+    // Here, since there is no text content, we must include an empty string for the second cell to preserve structure
+    cardRows.push([img, '']);
   });
-
-  // The prompt example expects two columns: image | text, but input HTML provides only images, so we must output both columns for structural accuracy
-  // To ensure two columns, the second cell should be an empty string (no text content)
-  const finalRows = Array.from(cardDivs).map(div => {
-    const img = div.querySelector('img');
-    return [img, ''];
-  });
-
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    ...finalRows
-  ], document);
+  // Assemble all rows, header first
+  const rows = [headerRow, ...cardRows];
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

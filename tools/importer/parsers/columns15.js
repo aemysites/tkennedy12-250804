@@ -1,26 +1,29 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid layout that contains the columns
-  let container = element.querySelector('.container');
-  if (!container) container = element;
-  let mainGrid = container.querySelector('.grid-layout');
-  if (!mainGrid) mainGrid = container.querySelector('[class*="grid-layout"]');
-  if (!mainGrid) return;
+  // Locate the columns grid that holds the content for the block
+  const grid = element.querySelector('.grid-layout');
+  if (!grid) return;
 
-  // Gather all direct children of the grid: these are the columns in the first 'row'
-  const columns = Array.from(mainGrid.children);
-  if (!columns.length) return;
+  // Get all direct children of the grid - each is a column cell
+  const columns = Array.from(grid.children);
+  if (columns.length === 0) return;
 
-  // HEADER ROW: exactly one cell, as per the example markdown structure
-  const headerRow = ['Columns (columns15)'];
+  // Compose the table cells per requirements
+  const headerText = 'Columns (columns15)'; // Must match example exactly
+  const cells = [
+    [headerText], // Header row: exactly one cell
+    columns      // Content row: one cell per column
+  ];
 
-  // The content row has as many columns as .grid-layout children
-  const contentRow = columns.map(col => col);
+  // Create the table block
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
-  // Assemble cells array accordingly
-  const cells = [headerRow, contentRow];
+  // Set colspan for the header to match number of columns in the content row
+  const headerRow = table.querySelector('tr');
+  if (headerRow && headerRow.children.length === 1) {
+    headerRow.children[0].setAttribute('colspan', String(columns.length));
+  }
 
-  // Create block and replace original element
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  // Replace the original element with the table
+  element.replaceWith(table);
 }

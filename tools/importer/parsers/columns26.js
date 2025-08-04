@@ -1,34 +1,37 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Get container and main grid
-  const container = element.querySelector('.container');
-  if (!container) return;
-  const grid = container.querySelector('.grid-layout');
-  if (!grid) return;
+  // Find the container inside the section
+  const container = element.querySelector(':scope > .container') || element;
 
-  // 2. Get main column elements
-  const gridChildren = Array.from(grid.querySelectorAll(':scope > *'));
-  if (gridChildren.length < 3) return;
+  // Find the main grid that holds all top-level content
+  const mainGrid = container.querySelector(':scope > .w-layout-grid.grid-layout');
+  if (!mainGrid) return;
 
-  // 3. Extract left column: heading + testimonial + avatar block
-  const heading = gridChildren[0];
-  const testimonial = gridChildren[1];
-  const innerGrid = gridChildren[2];
-  const innerGridChildren = Array.from(innerGrid.querySelectorAll(':scope > *'));
-  if (innerGridChildren.length < 3) return;
-  const avatarBlock = innerGridChildren[1];
-  const svgSignature = innerGridChildren[2];
+  const children = Array.from(mainGrid.children);
 
-  // 4. Compose left and right cell content, in vertical stack as in example
-  const leftCellContent = [heading, testimonial, avatarBlock];
-  const rightCellContent = [svgSignature];
+  // For this block, we want to group all content into a single left cell, as in the example
+  // (heading, quote, reviewer info)
+  const leftColItems = [];
 
-  // 5. Compose rows for the block table
+  // Heading
+  const heading = children.find(child => child.matches('p.h2-heading, h2'));
+  if (heading) leftColItems.push(heading);
+
+  // Quote
+  const quote = children.find(child => child.matches('p.paragraph-lg'));
+  if (quote) leftColItems.push(quote);
+
+  // Reviewer info: look for a nested grid (w-layout-grid) among mainGrid children
+  const reviewerBlock = children.find(child => 
+    child.classList.contains('w-layout-grid') && child !== mainGrid
+  );
+  if (reviewerBlock) leftColItems.push(reviewerBlock);
+
+  // Table: header then a single row with [all-content, empty]
   const headerRow = ['Columns (columns26)'];
-  const contentRow = [leftCellContent, rightCellContent];
+  const contentRow = [leftColItems, ''];
 
-  // 6. Build table and replace original element
   const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

@@ -1,51 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row exactly as specified in the requirements
-  const cells = [['Accordion (accordion34)']];
+  // Build the table rows array
+  const rows = [];
+  // Header row: single cell with the block name
+  rows.push(['Accordion (accordion34)']);
 
-  // Get all immediate accordion blocks inside the element
-  const accordions = Array.from(element.querySelectorAll(':scope > .accordion'));
+  // Find all direct accordions
+  const accordions = element.querySelectorAll(':scope > .accordion');
 
-  accordions.forEach(accordion => {
-    // Title: find the toggle label (usually a div with .paragraph-lg)
-    let titleElem = accordion.querySelector('.w-dropdown-toggle .paragraph-lg');
-    if (!titleElem) {
-      // fallback: find first child div after icon
-      const toggle = accordion.querySelector('.w-dropdown-toggle');
-      if (toggle) {
-        // skip the icon, use the next child div
-        const icon = toggle.querySelector('.dropdown-icon');
-        const children = Array.from(toggle.children);
-        let afterIcon = false;
-        for (const child of children) {
-          if (afterIcon && child.tagName === 'DIV') {
-            titleElem = child;
-            break;
-          }
-          if (child === icon) afterIcon = true;
-        }
+  accordions.forEach(acc => {
+    // Title: .w-dropdown-toggle > .paragraph-lg (fallback to toggle if not found)
+    let titleElem = null;
+    const toggle = acc.querySelector('.w-dropdown-toggle');
+    if (toggle) {
+      titleElem = toggle.querySelector('.paragraph-lg') || toggle;
+    }
+
+    // Content: .accordion-content > .utility-padding-all-1rem > .w-richtext (fallback to nav if not found)
+    let contentElem = null;
+    const nav = acc.querySelector('.accordion-content');
+    if (nav) {
+      const utilityDiv = nav.querySelector('div');
+      if (utilityDiv) {
+        contentElem = utilityDiv.querySelector('.w-richtext') || utilityDiv;
+      } else {
+        contentElem = nav;
       }
     }
-    // Content: rich text block inside accordion-content
-    let contentElem = accordion.querySelector('.accordion-content .w-richtext');
-    if (!contentElem) {
-      const nav = accordion.querySelector('.accordion-content');
-      // fallback: find first div inside nav
-      if (nav) {
-        contentElem = nav.querySelector('div');
-      }
-    }
-    // Fallback: if still not found use the accordion-content itself
-    if (!contentElem) {
-      contentElem = accordion.querySelector('.accordion-content');
-    }
 
-    cells.push([
-      titleElem || '',
-      contentElem || ''
-    ]);
+    if (titleElem && contentElem) {
+      rows.push([titleElem, contentElem]);
+    }
   });
 
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Create the table and replace the element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

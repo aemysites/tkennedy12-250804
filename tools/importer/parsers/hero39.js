@@ -1,45 +1,50 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row
+  // Header row: Table block name
   const headerRow = ['Hero (hero39)'];
 
-  // Get main grid containers
-  const grids = element.querySelectorAll(':scope > .w-layout-grid > div');
-
-  // Background image: try to find first <img> in first grid cell
+  // 2nd row: background image (optional)
+  // Find the prominent <img> - it's a direct child of the first grid-layout > div
   let bgImg = null;
-  if (grids.length > 0) {
-    bgImg = grids[0].querySelector('img');
-  }
-  if (!bgImg) {
-    bgImg = element.querySelector('img');
-  }
-
-  // Gather hero text content: headline, subheading, CTA
-  let textContent = [];
-  if (grids.length > 1) {
-    const contentRoot = grids[1];
-    // h1 headline
-    const h1 = contentRoot.querySelector('h1');
-    if (h1) textContent.push(h1);
-    // Subheading and button in .flex-vertical
-    const flexV = contentRoot.querySelector('.flex-vertical');
-    if (flexV) {
-      const para = flexV.querySelector('p');
-      if (para) textContent.push(para);
-      const cta = flexV.querySelector('a.button');
-      if (cta) textContent.push(cta);
+  const gridDivs = element.querySelectorAll(':scope > .w-layout-grid.grid-layout > div');
+  for (const div of gridDivs) {
+    const img = div.querySelector('img');
+    if (img && img.src) {
+      bgImg = img;
+      break;
     }
   }
+  const bgImgRow = [bgImg];
 
-  // Compose block table rows
-  const rows = [
-    headerRow,
-    [bgImg ? bgImg : ''],
-    [textContent.length ? textContent : '']
-  ];
+  // 3rd row: Headline, subheading, call-to-action
+  let contentElements = [];
+  if (gridDivs.length > 1) {
+    // The second grid-layout > div contains the textual content
+    const contentDiv = gridDivs[1];
+    // The main text block is a .w-layout-grid inside contentDiv
+    const textGrid = contentDiv.querySelector('.w-layout-grid');
+    if (textGrid) {
+      // Headline
+      const headline = textGrid.querySelector('h1');
+      if (headline) contentElements.push(headline);
+      // Subheading and CTA are in a vertical flex below
+      const verticalFlex = textGrid.querySelector('.flex-vertical');
+      if (verticalFlex) {
+        // Subheading paragraph
+        const subheading = verticalFlex.querySelector('p');
+        if (subheading) contentElements.push(subheading);
+        // Call-to-action button(s)
+        const buttonGroup = verticalFlex.querySelector('.button-group');
+        if (buttonGroup) {
+          contentElements.push(buttonGroup);
+        }
+      }
+    }
+  }
+  const contentRow = [contentElements];
 
-  // Replace element with structured block
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(table);
+  // Compose the table rows as specified: 1 col, 3 rows
+  const cells = [headerRow, bgImgRow, contentRow];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

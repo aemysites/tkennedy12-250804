@@ -557,8 +557,6 @@
   background: #fff;
   padding: 0;
 }
-
-/* Flex row for cards with outer horizontal padding for breathing room */
 .columns.columns7 > div {
   display: flex;
   flex-direction: row;
@@ -608,4 +606,199 @@
   border-radius: 16px;
   background: #e5e5e5;
   display: block;
+}
+
+
+.columns.columns9 {
+  background: #000;
+  color: #fff;
+  padding: 48px 0 0 0;
+  position: relative;
+  font-family: var(--body-font-family);
+}
+
+/* Grid: slightly wider first col, compact gap */
+.columns.columns9 > div {
+  display: grid;
+  grid-template-columns: 170px 1fr 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 32px;
+}
+
+/* Responsive: stack/pair columns at breakpoints */
+@media (max-width: 1023px) {
+  .columns.columns9 > div {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+@media (max-width: 599px) {
+  .columns.columns9 > div {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .columns.columns9 {
+    padding: 24px 0 0 0;
+  }
+}
+
+/* Bottom border */
+.columns.columns9::after {
+  display: block;
+  content: "";
+  width: 100%;
+  height: 1px;
+  background: #fff;
+  opacity: 0.6;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+
+/* --- First column: logo, brand, social icons --- */
+.columns.columns9 > div > div:first-child {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 0;
+}
+
+/* Logo and brand: Horizontal row */
+.columns.columns9 > div > div:first-child > p:first-child {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+/* Logo image: ensure always visible and correct size */
+.columns.columns9 > div > div:first-child picture,
+.columns.columns9 > div > div:first-child picture img {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  object-fit: contain;
+  margin-right: 0;
+  vertical-align: middle;
+  background: none;
+}
+
+/* Brand name: remove button look, plain uppercase text */
+.columns-container > .columns-wrapper > .block.columns.columns9 > div > div:first-child .button-container .button {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0;
+  margin: 0;
+  cursor: default;
+  border-radius: 0;
+  pointer-events: none;
+  display: inline;
+}
+
+.columns.columns9 > div > div:first-child .button-container {
+  margin: 0;
+  padding: 0;
+}
+
+/* Social icons: horizontal row of icons only, show only icon lis using nth-child(odd) */
+.columns.columns9 > div > div:first-child ul {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  margin: 6px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+.columns.columns9 > div > div:first-child ul li {
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+.columns.columns9 > div > div:first-child ul li:nth-child(odd) {
+  display: list-item;
+}
+
+.columns.columns9 > div > div:first-child ul li picture,
+.columns.columns9 > div > div:first-child ul li picture img {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
+  filter: grayscale(1) brightness(200%);
+  object-fit: contain;
+  margin: 0;
+  background: none;
+  vertical-align: middle;
+}
+
+/* --- Navigation columns --- */
+.columns.columns9 > div > div:not(:first-child) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  min-width: 0;
+  padding-top: 0;
+}
+
+.columns.columns9 > div > div:not(:first-child) h2 {
+  font-size: 13px;
+  font-family: var(--body-font-family);
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.09em;
+  margin: 0 0 12px 0;
+  padding: 0;
+  line-height: 1.2;
+}
+
+.columns.columns9 > div > div:not(:first-child) ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.columns.columns9 > div > div:not(:first-child) ul li {
+  margin: 0 0 10px 0;
+  font-size: 15px;
+  letter-spacing: 0.01em;
+}
+
+.columns.columns9 > div > div:not(:first-child) ul li a {
+  color: #fff;
+  text-decoration: none;
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.columns.columns9 > div > div:not(:first-child) ul li a:hover {
+  opacity: 0.7;
+}
+
+/* Remove default margin from all first/last children for a compact look */
+.columns.columns9 > div > div > *:first-child {
+  margin-top: 0;
+}
+.columns.columns9 > div > div > *:last-child {
+  margin-bottom: 0;
 }

@@ -1,8 +1,9 @@
 {
   "project": "AEM XWalk Boilerplate",
   "editUrlLabel": "AEM Editor",
-  "editUrlPattern": "{{contentSourceUrl}}{{pathname}}?cmd=open"
+  "editUrlPattern": "{{contentSourceUrl}}{{pathname}}?cmd=open",
   "plugins": [
+    {
       "id": "asset-library",
       "title": "My Assets",
       "environments": [ "edit" ],
@@ -10,6 +11,7 @@
       "isPalette": true,
       "includePaths": [ "**.docx**" ],
       "paletteRect": "top: 50px; bottom: 10px; right: 10px; left: auto; width:800px; height: calc(100vh - 60px)"
+    },
     {
       "id": "generate-variations",
       "title": "Generate Variations",
@@ -17,4 +19,6 @@
       "passConfig": true,
       "environments": [ "preview", "live", "edit" ],
       "includePaths": ["**.docx**"]
+    }
+  ]
 }

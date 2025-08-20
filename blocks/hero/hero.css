@@ -887,11 +887,12 @@ main > div:has(.hero.hero28),
   letter-spacing: 0.06em;
   line-height: 1.03;
   color: #fff;
-  text-align: left;
   margin: 0 0 0.25rem;
+
 .hero.hero39 h1 {
     font-size: clamp(1rem, 8vw, 1.25rem);
   }
+
   max-width: 99vw;
   text-align: left;
 }
@@ -954,7 +955,6 @@ main > div:has(.hero.hero28),
   }
 }
 
-/* Left visual column with layered parallelograms */
 .hero > div:first-child {
   flex: 0 0 45vw;
   min-width: 340px;
@@ -970,7 +970,6 @@ main > div:has(.hero.hero28),
   z-index: 1;
 }
 
-/* First parallelogram - top layer */
 .hero > div:first-child > div {
   position: absolute;
   top: 140px;
@@ -984,7 +983,6 @@ main > div:has(.hero.hero28),
   z-index: 2;
 }
 
-/* Second parallelogram - bottom layer (if HTML allows a sibling div) */
 .hero > div:first-child > div + div {
   position: absolute;
   top: 185px;
@@ -999,7 +997,6 @@ main > div:has(.hero.hero28),
   z-index: 1;
 }
 
-/* Right text column */
 .hero > div:last-child {
   flex: 1 1 0;
   min-width: 320px;
@@ -1014,7 +1011,6 @@ main > div:has(.hero.hero28),
   z-index: 3;
 }
 
-/* Vertically center headline content and bring text close to parallelogram */
 .hero > div:last-child > div {
   display: flex;
   flex-direction: column;
@@ -1027,7 +1023,6 @@ main > div:has(.hero.hero28),
   padding-left: 0;
 }
 
-/* Headline style and spacing */
 .hero h1 {
   color: #181818;
   font-family: var(--heading-font-family);
@@ -1041,12 +1036,10 @@ main > div:has(.hero.hero28),
   padding: 0;
 }
 
-/* Remove any other content than h1 in the text column */
 .hero > div:last-child > div > *:not(h1) {
   display: none;
 }
 
-/* Responsive adjustments */
 @media (width <= 900px) {
   .hero {
     flex-direction: column;
@@ -1110,4 +1103,121 @@ main > div:has(.hero.hero28),
   }
 }
 
-/* Remove unwanted margin/padding from .hero wrapper if needed */
+
+.hero.hero9 {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  background:
+    linear-gradient(to right, rgb(16 20 28 / 82%) 0%, rgb(16 20 28 / 30%) 52%, rgb(16 20 28 / 4%) 100%),
+    url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1400&q=80') center center/cover no-repeat;
+  overflow: hidden;
+}
+
+.hero.hero9 > div:first-child {
+  display: none;
+}
+
+.hero.hero9 > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  z-index: 2;
+}
+
+.hero.hero9 > div:nth-child(2) > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 580px;
+  box-sizing: border-box;
+  padding-left: clamp(86px, 10vw, 128px);
+  margin-top: 8vh; /* Move block higher to visually match reference */
+  padding-bottom: 0;
+}
+
+.hero.hero9 h1 {
+  color: #fff;
+  font-family: 'ITC Charter', 'PwC ITC Charter Fallback', serif;
+  font-weight: 600;
+  font-size: 2.05rem;
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  text-shadow: 0 2px 14px rgb(0 0 0 / 18%);
+}
+
+.hero.hero9 h1 em {
+  display: block;
+  font-style: normal;
+  font-size: 4.4rem;
+  font-weight: 900;
+  margin-top: 0.9em;
+  margin-bottom: 0.9em;
+  line-height: 1.04;
+  color: #fff;
+  letter-spacing: -0.01em;
+  text-shadow: 0 2px 18px rgb(0 0 0 / 18%);
+}
+
+/* Responsive adjustments */
+@media (width <= 1100px) {
+  .hero.hero9 > div:nth-child(2) > div {
+    max-width: 96vw;
+    padding-left: 6vw;
+    margin-top: 8vw;
+  }
+
+  .hero.hero9 h1 {
+    font-size: 1.15rem;
+  }
+
+  .hero.hero9 h1 em {
+    font-size: 2.25rem;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+}
+
+@media (width <= 700px) {
+  .hero.hero9 {
+    min-height: 340px;
+  }
+
+  .hero.hero9 > div:nth-child(2) > div {
+    max-width: 99vw;
+    padding-left: 4vw;
+    margin-top: 10vw;
+  }
+
+  .hero.hero9 h1 {
+    font-size: 0.98rem;
+  }
+
+  .hero.hero9 h1 em {
+    font-size: 1.08rem;
+  }
+}
+
+/* Reserve space for pause button in top-right corner as in original block */
+.hero.hero9::after {
+  display: block;
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  background: rgb(16 20 28 / 62%);
+  z-index: 3;
+}

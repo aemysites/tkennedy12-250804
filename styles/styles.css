@@ -17,56 +17,78 @@
   --text-color: #131313;
   --link-color: #3b63fb;
   --link-hover-color: #1d3ecf;
-  --body-font-family: "Instrument Sans", "Instrument Sans Fallback", "sans-serif";
-  --heading-font-family: "Syncopate", "Syncopate Fallback", "sans-serif";
-  --body-font-size-m: 22.56px;
-  --body-font-size-s: 16px;
-  --body-font-size-xs: 11.36px;
-  --heading-font-size-xxl: 90.4px;
-  --heading-font-size-xl: 45.28px;
-  --heading-font-size-l: 22.56px;
-  --heading-font-size-m: 22.56px;
-  --heading-font-size-s: 16px;
-  --heading-font-size-xs: 11.36px;
-  --nav-height: 75px;
+  --body-font-family: "PwC Helvetica Neue", "PwC Helvetica Neue Fallback", "arial", "serif";
+  --heading-font-family: "PwC Helvetica Neue", "PwC Helvetica Neue Fallback", "Arial", "sans-serif";
+  --body-font-size-m: 24px;
+  --body-font-size-s: 20px;
+  --body-font-size-xs: 20.576px;
+  --heading-font-size-xxl: 40px;
+  --heading-font-size-xl: 32px;
+  --heading-font-size-l: 32px;
+  --heading-font-size-m: 24px;
+  --heading-font-size-s: 20px;
+  --heading-font-size-xs: 20.576px;
+  --nav-height: 127px;
   --header-height: var(--nav-height);
 }
 
 /* fallback fonts */
 @font-face {
-  font-family:"Instrument Sans Fallback";
+  font-family:"PwC Helvetica Neue Fallback";
   font-style:normal;
   font-weight:400;
   src:local("Arial");
-  ascent-override:93.97%;
-  descent-override:24.22%;
+  ascent-override:95.98%;
+  descent-override:21.11%;
   line-gap-override:0.00%;
-  size-adjust:103.22%;
+  size-adjust:101.37%;
 }
 
 @font-face {
-  font-family:"Syncopate Fallback";
+  font-family:"PwC Helvetica Neue Fallback";
+  font-style:normal;
+  font-weight:bold;
+  src:local("Arial Bold");
+  ascent-override:97.25%;
+  descent-override:21.69%;
+  line-gap-override:0.00%;
+  size-adjust:100.05%;
+}
+
+@font-face {
+  font-family:"PwC Helvetica Neue Light Fallback";
+  font-style:normal;
+  font-weight:normal;
+  src:local("Arial");
+  ascent-override:99.55%;
+  descent-override:25.53%;
+  line-gap-override:0.00%;
+  size-adjust:97.14%;
+}
+
+@font-face {
+  font-family:"PwC ITC Charter Fallback";
   font-style:normal;
   font-weight:400;
   src:local("Arial");
-  ascent-override:44.95%;
-  descent-override:12.31%;
-  line-gap-override:4.33%;
-  size-adjust:169.04%;
+  ascent-override:98.99%;
+  descent-override:28.90%;
+  line-gap-override:0.00%;
+  size-adjust:97.59%;
 }
 
 @media (width>=900px) {
   :root {
-    --body-font-size-m: 22.56px;
-    --body-font-size-s: 16px;
-    --body-font-size-xs: 11.36px;
-    --heading-font-size-xxl: 90.4px;
-    --heading-font-size-xl: 45.28px;
-    --heading-font-size-l: 22.56px;
-    --heading-font-size-m: 22.56px;
-    --heading-font-size-s: 16px;
-    --heading-font-size-xs: 11.36px;
-    --nav-height: 75px;
+    --body-font-size-m: 24px;
+    --body-font-size-s: 20px;
+    --body-font-size-xs: 20.576px;
+    --heading-font-size-xxl: 40px;
+    --heading-font-size-xl: 32px;
+    --heading-font-size-l: 32px;
+    --heading-font-size-m: 24px;
+    --heading-font-size-s: 20px;
+    --heading-font-size-xs: 20.576px;
+    --nav-height: 127px;
   }
 }
 
@@ -255,9 +277,13 @@ main .section.light, main .section.highlight {
 }
 
 .section.section-1 {
-  background: rgb(247 248 245) none repeat scroll 0% 0% / auto padding-box border-box;
+  background: rgb(255 255 255) none repeat scroll 50% 0% / cover padding-box border-box;
 }
 
 .section.section-2 {
-  background: rgb(0 0 0) none repeat scroll 0% 0% / auto padding-box border-box;
+  background: rgb(255 245 237) none repeat scroll 50% 0% / cover padding-box border-box;
+}
+
+.section.section-3 {
+  background: rgb(245 247 248) none repeat scroll 0% 0% / auto padding-box border-box;
 }

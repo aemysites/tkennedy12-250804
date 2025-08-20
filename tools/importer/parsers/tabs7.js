@@ -1,22 +1,26 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row: must be a single cell with 'Tabs'
-  const headerRow = ['Tabs'];
-  // Get all tabs (li children)
-  const tabItems = Array.from(element.children);
-  // Each tab row: [tab label, empty string for content]
-  const rows = tabItems.map(li => {
+  // Table header row: one column
+  const headerRow = ['Tabs (tabs7)'];
+
+  // Each tab row: two columns (label, content)
+  // Since there is no tab content in the provided HTML, content is empty
+  const tabRows = Array.from(element.children).map((li) => {
     let label = '';
-    const a = li.querySelector('a');
-    if (a) {
-      label = a.textContent.trim();
+    const link = li.querySelector('a');
+    if (link) {
+      label = link.textContent.trim();
     } else {
       label = li.textContent.trim();
     }
+    // Always create two columns per row, to match required structure
     return [label, ''];
   });
-  // The table must have a single cell in the header row, and two cells in each tab row
-  const cells = [headerRow, ...rows];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+
+  // Compose the table: header row is one column, subsequent rows are two columns
+  const cells = [headerRow, ...tabRows];
+
+  // Create table and replace
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

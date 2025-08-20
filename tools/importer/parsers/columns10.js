@@ -1,39 +1,34 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // The structure is: .parsys_column.pwccol2-longform > (c0 left, c1 right)
-  // Each column has a .cmp-container
-  const columns = element.querySelectorAll(':scope > .parsys_column');
-  if (columns.length !== 2) return;
-
-  // LEFT COLUMN (image)
-  let leftCellContent;
-  const leftCmp = columns[0].querySelector(':scope > .cmp-container');
-  if (leftCmp) {
-    // Use whole cmp-container so image and wrappers are preserved
-    leftCellContent = leftCmp;
-  } else {
-    leftCellContent = columns[0];
+  // Helper: get direct columns from the origin markup
+  function getColumns(parent) {
+    const colContainer = parent.querySelector('.parsys_column.pwccol2-longform');
+    if (!colContainer) return [];
+    // Get the two column divs in order
+    return [
+      colContainer.querySelector('.parsys_column.pwccol2-longform-c0'),
+      colContainer.querySelector('.parsys_column.pwccol2-longform-c1'),
+    ];
   }
 
-  // RIGHT COLUMN (list content)
-  let rightCellContent;
-  const rightCmp = columns[1].querySelector(':scope > .cmp-container');
-  if (rightCmp) {
-    // Prefer text-component inside cmp-container
-    const textComp = rightCmp.querySelector('.text-component');
-    if (textComp) {
-      rightCellContent = textComp;
-    } else {
-      rightCellContent = rightCmp;
-    }
-  } else {
-    rightCellContent = columns[1];
-  }
-
-  // Compose table structure
+  // The header row must match the example
   const headerRow = ['Columns (columns10)'];
-  const cells = [headerRow, [leftCellContent, rightCellContent]];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
 
+  // Get the columns
+  const columns = getColumns(element);
+
+  // Defensive: if a column is missing, fill with an empty div
+  const row = columns.map((colDiv) => {
+    if (!colDiv) return document.createElement('div');
+    // Find the innermost .cmp-container if available
+    const container = colDiv.querySelector('.cmp-container');
+    return container || colDiv;
+  });
+
+  // Only create two columns as in the example
+  const cells = [headerRow, row];
+
+  // Create table and replace original block
+  const block = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(block);
 }

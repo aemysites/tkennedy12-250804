@@ -1,44 +1,70 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find all three card columns (robust selector)
-  const cols = Array.from(element.querySelectorAll('.pwccol3-longform > .parsys_column'));
-  const rows = [
-    ['Cards (cards6)']
-  ];
-
-  cols.forEach((col) => {
-    // 1. Find image: either <img> or video poster image
-    let img = col.querySelector('img');
-    if (!img) {
-      const poster = col.querySelector('.vjs-poster img');
-      if (poster) img = poster;
+  // Helper to get image or video-poster
+  function getImage(cardElem) {
+    // Try image
+    let img = cardElem.querySelector('img');
+    if (img) return img;
+    // Try picture
+    const picture = cardElem.querySelector('picture');
+    if (picture) return picture;
+    // Try video poster image
+    const poster = cardElem.querySelector('.vjs-poster img');
+    if (poster) return poster;
+    return '';
+  }
+  // Helper to get text block for card
+  function getText(cardElem) {
+    // Prefer .text-component (contains all text)
+    const textComponent = cardElem.querySelector('.text-component');
+    if (textComponent) return textComponent;
+    // Or description for video
+    const description = cardElem.querySelector('.videojs-description .desc-width');
+    if (description) return description;
+    // Otherwise, gather h3, p, and a in order
+    const items = [];
+    cardElem.querySelectorAll('h3, p, a').forEach(n => items.push(n));
+    if (items.length) return items;
+    // Fallback: all text inside
+    return cardElem;
+  }
+  // Find all cards (columns)
+  let cards = [];
+  const colControl = element.classList.contains('columnControl') ? element : element.querySelector('.columnControl');
+  if (colControl) {
+    const cols = colControl.querySelectorAll('.pwccol3-longform > div');
+    if (cols.length) {
+      cards = Array.from(cols);
+    } else {
+      cards = Array.from(colControl.children);
     }
-
-    // 2. Find a single block containing all card text (use most generic upper text container)
-    // Prefer .text-component, fallback to .text.parbase.section or just col
-    let textBlock = col.querySelector('.text-component');
-    if (!textBlock) {
-      const section = col.querySelector('.text.parbase.section');
-      if (section) {
-        // Use the section but remove the first empty child <div> if present
-        let real = Array.from(section.children).find(c => c.classList.contains('text-component')) || section;
-        textBlock = real;
-      } else {
-        textBlock = col;
-      }
-    }
-
-    // Reference the existing text block, but remove empty wrappers if present
-    let textContent = textBlock;
-    // Don't output empty columns
-    if (img || (textContent && textContent.textContent.trim())) {
-      rows.push([
-        img || '',
-        textContent || ''
-      ]);
-    }
+  } else {
+    cards = [element];
+  }
+  // Build rows: header then one per card
+  const rows = [['Cards (cards6)']];
+  cards.forEach(cardElem => {
+    // Try to find .cmp-container inside the card column, else the column itself
+    const cmp = cardElem.querySelector('.cmp-container') || cardElem;
+    // Get image
+    const img = getImage(cmp);
+    // Get text block
+    let text = getText(cmp);
+    // If text is an array, use as-is; else wrap
+    if (!Array.isArray(text)) text = [text];
+    // Remove empty nodes
+    text = text.filter(n => {
+      if (typeof n === 'string') return n.trim() !== '';
+      if (n.nodeType === 3) return n.textContent.trim() !== '';
+      if (n.nodeType === 1) return n.textContent.trim() !== '' || n.tagName === 'A';
+      return false;
+    });
+    rows.push([
+      img ? img : '',
+      text.length === 1 ? text[0] : text,
+    ]);
   });
-
+  // Create and replace
   const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

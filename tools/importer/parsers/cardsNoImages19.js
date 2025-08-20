@@ -1,38 +1,29 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header row as in the example
+  // Block header matches example
   const headerRow = ['Cards (cardsNoImages19)'];
   const cells = [headerRow];
 
-  // Find the parsys container for cards
-  const parsys = element.querySelector('.parsys.sectionpar');
+  // Defensive: find the section and its content container
+  const section = element.querySelector('section');
+  if (!section) return;
+  const parsys = section.querySelector('.parsys.sectionpar');
   if (!parsys) return;
 
-  // Each card block is a .text.parbase.section with .text-component inside
-  // The first .text.parbase.section is a heading, skip it
-  const cardSections = Array.from(parsys.children).filter(
-    (child, idx) => {
-      // Only want .text.parbase.section
-      if (!child.classList.contains('text') || !child.querySelector('.text-component')) return false;
-      // Skip the first which is only the section heading
-      // We check for heading by looking for h2 and only that
-      const tc = child.querySelector('.text-component');
-      if (tc.querySelector('h2')) return false;
-      return true;
-    }
-  );
+  // Each .text.parbase.section represents a card; ensure we reference existing elements
+  const cardBlocks = Array.from(parsys.children).filter(child => child.classList.contains('text'));
 
-  // For each card section, reference its .text-component directly
-  cardSections.forEach((section) => {
-    const textComponent = section.querySelector('.text-component');
-    if (textComponent && textComponent.textContent.trim().length > 0) {
-      // Use the existing .text-component (do not clone)
+  // For each card, include its .text-component div as the sole cell in the row
+  cardBlocks.forEach(cardBlock => {
+    const textComponent = cardBlock.querySelector('.text-component');
+    if (textComponent && (textComponent.textContent.trim() || textComponent.querySelector('a'))) {
+      // Defensive: Only include non-empty cards
       cells.push([textComponent]);
     }
   });
 
-  // Create the block table
+  // Create the table using referenced elements
   const table = WebImporter.DOMUtils.createTable(cells, document);
-  // Replace the original element
+  // Replace in DOM
   element.replaceWith(table);
 }

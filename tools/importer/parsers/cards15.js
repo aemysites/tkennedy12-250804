@@ -1,29 +1,45 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header row: must match example exactly
-  const headerRow = ['Cards (cards15)'];
+  // Locate the columns in the cards block
+  const columnWrappers = element.querySelectorAll(':scope > div > div');
+  const rows = [['Cards (cards15)']];
 
-  // Find all immediate card columns
-  const cardDivs = Array.from(element.querySelectorAll(':scope > .parsys_column'));
+  columnWrappers.forEach((column) => {
+    // The .textimage component is the card root
+    const cardRoot = column.querySelector('.textimage');
+    if (!cardRoot) return;
 
-  // For each card, extract image and all text content
-  const rows = cardDivs.map(cardDiv => {
-    // Image extraction
-    const img = cardDiv.querySelector('img');
-
-    // Text content extraction: get all content inside .textimage-text (includes heading, paragraphs, and CTA)
-    let textCell = '';
-    const textContentDiv = cardDiv.querySelector('.textimage-text');
-    if (textContentDiv) {
-      // Reference the full block for semantic resilience and completeness
-      textCell = textContentDiv;
+    // Extract image for the first cell
+    let imageCell = null;
+    const img = cardRoot.querySelector('.textimage-image img');
+    if (img) {
+      imageCell = img;
+    } else {
+      // fallback to the image container
+      const imageDiv = cardRoot.querySelector('.textimage-image');
+      if (imageDiv) imageCell = imageDiv;
     }
-    return [img, textCell];
+
+    // Extract the text content for the second cell
+    let textCell = null;
+    const textBlock = cardRoot.querySelector('.textimage-text .text-component');
+    if (textBlock) {
+      textCell = textBlock;
+    } else {
+      // fallback to all textimage-text
+      const textDiv = cardRoot.querySelector('.textimage-text');
+      if (textDiv) textCell = textDiv;
+    }
+
+    // Only add if there's content
+    if (imageCell || textCell) {
+      rows.push([imageCell, textCell]);
+    }
   });
 
-  // Compose cells array for the table
-  const cells = [headerRow, ...rows];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  // Replace the original element
-  element.replaceWith(table);
+  // Only create and replace if there is at least one card
+  if (rows.length > 1) {
+    const block = WebImporter.DOMUtils.createTable(rows, document);
+    element.replaceWith(block);
+  }
 }

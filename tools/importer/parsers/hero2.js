@@ -1,40 +1,81 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row exactly as in the requirement
+  // Table header row matches example
   const headerRow = ['Hero (hero2)'];
 
-  // 2nd row: Background Image (optional)
-  // Find the image element (referenced from document, not cloned)
-  let bgImgEl = null;
-  const imgEl = element.querySelector('img');
-  if (imgEl) bgImgEl = imgEl;
-  const row2 = [bgImgEl ? bgImgEl : ''];
-
-  // 3rd row: Title/Subheading/Paragraph/CTA (all text content except the image itself)
-  // Collect all heading and paragraph elements (keep order as in HTML)
-  // Only exclude p's that contain the image itself
-  const contentEls = [];
-  // Try to locate text container - .image div or element itself
-  const textContainer = element.querySelector('.image') || element;
-  textContainer.childNodes.forEach(node => {
-    if (node.nodeType === Node.ELEMENT_NODE) {
-      // If element is a heading or paragraph (and not just an image)
-      if (/^H[1-6]$/i.test(node.tagName)) {
-        contentEls.push(node);
-      } else if (node.tagName === 'P' && !node.querySelector('img')) {
-        contentEls.push(node);
+  // --- Extract background image for the first content row (after header)
+  let bgImgElem = null;
+  // Try to get desktopPoster from CSS variable (preferred)
+  const videoWrapper = element.querySelector('.herov2__video-wrapper');
+  if (videoWrapper) {
+    const wrapperStyle = videoWrapper.getAttribute('style') || '';
+    const desktopPosterMatch = wrapperStyle.match(/--desktopPoster:\s*url\(([^)]*)\)/);
+    if (desktopPosterMatch && desktopPosterMatch[1]) {
+      const url = desktopPosterMatch[1].replace(/['"]/g, '');
+      if (url) {
+        bgImgElem = document.createElement('img');
+        bgImgElem.src = url;
+        bgImgElem.alt = '';
       }
-    } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-      // If direct text node (e.g., text directly in div)
-      const p = document.createElement('p');
-      p.textContent = node.textContent.trim();
-      contentEls.push(p);
     }
-  });
-  const row3 = [contentEls.length ? contentEls : ''];
+    // If no desktopPoster in style, fallback to <video> element
+    if (!bgImgElem) {
+      const video = videoWrapper.querySelector('video');
+      if (video) {
+        let posterUrl = video.getAttribute('desktopposter') || video.getAttribute('poster');
+        if (posterUrl && posterUrl !== '#') {
+          bgImgElem = document.createElement('img');
+          bgImgElem.src = posterUrl;
+          bgImgElem.alt = '';
+        }
+      }
+    }
+  }
 
-  // Compose the final table structure
-  const cells = [headerRow, row2, row3];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  // --- Extract all hero text content for the second content row
+  let heroContentElems = [];
+  const contentWrapper = element.querySelector('.herov2__content-wrapper');
+  if (contentWrapper) {
+    // Get all direct children (headings, paragraphs, spans, etc)
+    Array.from(contentWrapper.childNodes).forEach((node) => {
+      if (node.nodeType === 1) { // Element node
+        // Only include non-empty elements
+        if (node.textContent && node.textContent.trim()) {
+          heroContentElems.push(node);
+        }
+      } else if (node.nodeType === 3) { // Text node
+        const txt = node.textContent.trim();
+        if (txt) {
+          const span = document.createElement('span');
+          span.textContent = txt;
+          heroContentElems.push(span);
+        }
+      }
+    });
+  }
+  // If contentWrapper is missing or empty, fallback to the main title h1
+  if (heroContentElems.length === 0) {
+    const h1 = element.querySelector('h1');
+    if (h1 && h1.textContent.trim()) {
+      heroContentElems.push(h1);
+    }
+  }
+  // Fallback: If still no text content, try most likely wrapper
+  if (heroContentElems.length === 0) {
+    const fallback = element.querySelector('.herov2__wrapper');
+    if (fallback && fallback.textContent.trim()) {
+      heroContentElems.push(fallback);
+    }
+  }
+
+  // Build final table structure
+  const cells = [
+    headerRow, // Header row
+    [bgImgElem ? bgImgElem : ''],     // First content row: background image
+    [heroContentElems.length > 0 ? heroContentElems : ''] // Second content row: all text content
+  ];
+
+  // Create the block table and replace the original element
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

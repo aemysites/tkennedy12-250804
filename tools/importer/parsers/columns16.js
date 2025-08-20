@@ -1,46 +1,48 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row, exactly as specified
-  const headerRow = ['Columns (columns16)'];
+  // Helper to extract all .columnControl blocks, top-level or nested
+  let colControls = Array.from(element.querySelectorAll(':scope > .columnControl'));
+  if (colControls.length === 0) {
+    // fallback: nested anywhere in the block
+    colControls = Array.from(element.querySelectorAll('.columnControl'));
+  }
+  if (!colControls.length) {
+    // fallback: treat element as single column row
+    colControls = [element];
+  }
 
-  // Find the grid layout containing the columns
-  const grid = element.querySelector('.grid-layout');
-  if (!grid) return;
-
-  // Each direct child of grid is a column
-  const gridColumns = Array.from(grid.children);
-
-  // For each column, extract ALL relevant content as a cell
-  const contentRow = gridColumns.map(col => {
-    // Get all descendants with content (elements or non-empty text nodes)
-    // In Webflow/WF exported columns structure, there may be an extra wrapper
-    // Prefer to grab all children below the column div
-    let target = col;
-    // If only one child and that child has at least one element, treat that as column content block
-    if (col.children.length === 1 && col.children[0].children.length > 0) {
-      target = col.children[0];
+  // For each .columnControl, extract its columns (parsys_column children)
+  const cells = [['Columns (columns16)']];
+  colControls.forEach(colControl => {
+    // Each column row
+    const colDivs = Array.from(colControl.querySelectorAll(':scope > .parsys_column'));
+    if (colDivs.length) {
+      const rowCells = colDivs.map(col => {
+        // Gather all direct child elements with actual content
+        const children = Array.from(col.children).filter(child => {
+          // Remove clear divs
+          if (child.tagName === 'DIV' && child.getAttribute('style') && child.getAttribute('style').toLowerCase().includes('clear')) return false;
+          // Remove empty wrappers
+          if (!child.textContent.trim() && !child.querySelector('img, video, blockquote')) return false;
+          return true;
+        });
+        // If more than one, combine into wrapper for full content
+        if (children.length > 1) {
+          const wrapper = document.createElement('div');
+          children.forEach(child => wrapper.appendChild(child));
+          return wrapper;
+        }
+        if (children.length === 1) return children[0];
+        // If none, fallback to full column
+        return col;
+      });
+      cells.push(rowCells);
     }
-    // Gather all element children and meaningful text nodes
-    const nodes = [];
-    for (const node of target.childNodes) {
-      if (node.nodeType === 1) {
-        nodes.push(node);
-      } else if (
-        node.nodeType === 3 && node.textContent && node.textContent.trim().length > 0
-      ) {
-        // Create a span to preserve inline text node
-        const span = document.createElement('span');
-        span.textContent = node.textContent;
-        nodes.push(span);
-      }
-    }
-    // If nothing, fallback to the column itself
-    return nodes.length === 1 ? nodes[0] : nodes.length > 1 ? nodes : target;
   });
 
-  // Build table: header row (single cell), content row (multiple columns)
-  const tableArray = [headerRow, contentRow];
-
-  const block = WebImporter.DOMUtils.createTable(tableArray, document);
-  element.replaceWith(block);
+  // Only replace if we have at least two rows (header and one content)
+  if (cells.length > 1) {
+    const block = WebImporter.DOMUtils.createTable(cells, document);
+    element.replaceWith(block);
+  }
 }

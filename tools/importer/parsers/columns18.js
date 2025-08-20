@@ -1,40 +1,34 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Prepare the header row exactly matching the block name
+  // 1. Table header matches the example exactly
   const headerRow = ['Columns (columns18)'];
 
-  // 2. Find the grid container that holds columns
-  const grid = element.querySelector('.w-layout-grid');
-  if (!grid) return;
+  // 2. Find all immediate columns (should be two for this block)
+  const columns = element.querySelectorAll(':scope > .parsys_column');
+  if (columns.length < 2) return; // Edge case: bail if not a two-column block
 
-  // 3. Find the column children by their tag type/order
-  // The structure is: [contentDiv, contactList, image]
-  let contentDiv = null, contactList = null, image = null;
-  Array.from(grid.children).forEach(child => {
-    if (child.tagName === 'DIV') {
-      contentDiv = child;
-    } else if (child.tagName === 'UL') {
-      contactList = child;
-    } else if (child.tagName === 'IMG') {
-      image = child;
-    }
-  });
+  // 3. LEFT COLUMN: Image (reference the existing img element)
+  let leftCellContent = [];
+  const leftImg = columns[0].querySelector('img');
+  if (leftImg) leftCellContent.push(leftImg);
 
-  // Robustly handle missing children
-  const leftColArr = [];
-  if (contentDiv) leftColArr.push(contentDiv);
-  if (contactList) leftColArr.push(contactList);
-  const rightColArr = image ? [image] : [];
+  // 4. RIGHT COLUMN: Text content, preserve headings, paragraphs, link
+  let rightCellContent = [];
+  const textComp = columns[1].querySelector('.text-component');
+  if (textComp) {
+    // Reference <h3> if present
+    const h3 = textComp.querySelector('h3');
+    if (h3) rightCellContent.push(h3);
+    // Reference all <p> (including one with the link)
+    const ps = textComp.querySelectorAll('p');
+    ps.forEach(p => rightCellContent.push(p));
+  }
 
-  // Both columns must be present, but can be empty if not found
-  const columnsRow = [leftColArr, rightColArr];
-
-  // 4. Build the table cells array; 2 columns per row
-  const cells = [headerRow, columnsRow];
-
-  // 5. Create the block using the helper
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-
-  // 6. Replace the original element
-  element.replaceWith(table);
+  // 5. If any column is empty, still render the cell as empty (should not error)
+  // 6. The semantic meaning of the source HTML is preserved (heading, paragraphs, button)
+  // 7. Reference existing elements (not clones, not innerHTML)
+  // 8. Table header is correct and no extra tables/hr/metadata blocks
+  const cells = [headerRow, [leftCellContent, rightCellContent]];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

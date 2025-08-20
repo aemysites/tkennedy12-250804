@@ -19,6 +19,17 @@
 
 .columns > div > div {
   order: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 64px;
+  max-width: 1200px;
+  margin: 96px auto;
+  padding: 0 32px;
+  box-sizing: border-box;
+  background: #fff;
+  min-height: 520px;
 }
 
 .columns > div > .columns-img-col {
@@ -899,34 +910,8 @@
   }
 
 .columns.columns14 h2 {
-  font-family: var(--heading-font-family);
-.columns.columns14 h2 {
-  font-family: var(--heading-font-family);
-  font-weight: 400;
-  font-size: 2.8rem;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  color: #000;
-  margin: 0;
-  text-align: left;
-  word-break: break-word;
-}
-  .columns.columns14 > div {
-    flex-direction: column;
-    gap: 20px;
-    padding: 0;
-    align-items: stretch;
-  }
-
-  .columns.columns14 > div > div:last-child {
-    max-width: 100%;
-    width: 100%;
-  }
-
-  .columns.columns14 h2 {
     font-size: 2rem;
   }
-}
 
 .columns.columns14 > div > div:last-child p {
   font-family: var(--body-font-family);
@@ -1013,14 +998,14 @@
 }
 
 .columns.columns15 h1 {
-  font-family: Syncopate, 'Syncopate Fallback', sans-serif;
+  font-family: Syncopate, "Syncopate Fallback", sans-serif;
   font-size: 3rem;
   font-weight: 400;
   line-height: 1.06;
   color: #181a1a;
   margin: 0 0 12px;
   letter-spacing: 0.01em;
-  word-break: break-word;
+  overflow-wrap: break-word; /* Removed deprecated "word-break: break-word" as "overflow-wrap" replaces its functionality. */
   max-width: 100%;
 }
 
@@ -1037,20 +1022,10 @@
 }
 
 .columns.columns15 p:not(.button-container) {
-  font-size: 1rem;
-  color: #65676a;
-  margin-bottom: 18px;
-  max-width: 36em;
-  margin-top: 0;
-}
+.columns.columns15 h1 {
+    font-size: 1.4rem;
+  }
 
-.columns.columns15 .button-container {
-  margin: 0;
-  text-align: left;
-  padding-top: 0;
-}
-
-.columns.columns15 .button-container .button {
   background: #fff;
   color: #181a1a;
   border: 1.5px solid #181a1a;
@@ -1444,9 +1419,6 @@
   margin: 0;
 }
 
-/* Use flex for horizontal layout, vertical centering */
-
-/* Responsive: stack columns vertically */
 @media (width <= 900px) {
   .columns > div {
     flex-direction: column;
@@ -1462,7 +1434,6 @@
   }
 }
 
-/* Left column */
 .columns > div > div:first-child {
   flex: 1 1 54%;
   display: flex;
@@ -1474,7 +1445,6 @@
   padding: 0;
 }
 
-/* Heading styling */
 .columns > div > div:first-child h2 {
   margin-top: 0;
   margin-bottom: 38px;
@@ -1484,7 +1454,6 @@
   line-height: 1.18;
 }
 
-/* Paragraph styling */
 .columns > div > div:first-child p {
   margin: 0 0 38px;
   padding: 0;
@@ -1495,7 +1464,6 @@
   position: relative;
 }
 
-/* Orange bar above first and second paragraphs */
 .columns > div > div:first-child p:nth-of-type(1)::before,
 .columns > div > div:first-child p:nth-of-type(2)::before {
   position: absolute;
@@ -1509,7 +1477,6 @@
   content: "";
 }
 
-/* Right column: vertically center image with text block, hide video transcript */
 .columns > div > div:last-child {
   flex: 1 1 46%;
   display: flex;
@@ -1533,7 +1500,6 @@
   padding: 0;
 }
 
-/* Only show image */
 .columns > div > div:last-child picture,
 .columns > div > div:last-child img {
   display: block;
@@ -1548,14 +1514,139 @@
   box-shadow: none;
 }
 
-/* Hide all <ul> (video transcript etc) below image */
 .columns > div > div:last-child > ul {
   display: none;
 }
 
-/* Remove bullets and padding for any visible lists */
 .columns ul {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+
+/* Main 2-column flex layout for the block content */
+
+/* Responsive stacking for mobile */
+@media (width <= 900px) {
+  .columns > div > div {
+    flex-direction: column;
+    gap: 40px;
+    margin: 36px 0;
+    padding: 0 12px;
+    min-height: unset;
+    align-items: stretch;
+  }
+}
+
+/* LEFT COLUMN: group heading and two paragraphs in a flex column */
+.columns > div > div > h2,
+.columns > div > div > p:nth-of-type(1),
+.columns > div > div > p:nth-of-type(2) {
+  flex: 1 1 0;
+  max-width: 520px;
+  align-self: flex-start;
+  margin-bottom: 20px;
+  text-align: left;
+  order: 1;
+  display: block;
+}
+
+@media (width <= 900px) {
+  .columns > div > div > h2,
+  .columns > div > div > p:nth-of-type(1),
+  .columns > div > div > p:nth-of-type(2) {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+/* Headline styling */
+.columns > div > div > h2 {
+  font-family: var(--heading-font-family);
+  font-weight: 700;
+  font-size: 2.375rem;
+  line-height: 1.1;
+  color: #242424;
+  margin: 0 0 30px;
+  letter-spacing: -0.01em;
+  max-width: 18ch;
+}
+
+/* Supporting paragraphs */
+.columns > div > div > p:nth-of-type(1),
+.columns > div > div > p:nth-of-type(2) {
+  font-size: 1rem;
+  color: #6F6F6F;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  max-width: 36em;
+}
+
+/* Decorative line before first two paragraphs */
+.columns > div > div > p:nth-of-type(1)::before,
+.columns > div > div > p:nth-of-type(2)::before {
+  display: inline-block;
+  width: 40px;
+  height: 3px;
+  border-radius: 2px;
+  background: #d24624;
+  content: "";
+  margin-right: 12px;
+  vertical-align: middle;
+  margin-bottom: 3px;
+}
+
+/* RIGHT COLUMN: image */
+.columns > div > div > p:nth-of-type(3) {
+  flex: 1 1 0;
+  max-width: 430px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 0;
+  order: 2;
+  padding: 0;
+}
+
+@media (width <= 900px) {
+  .columns > div > div > p:nth-of-type(3) {
+    justify-content: center;
+    align-items: center;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+}
+
+/* Image styling */
+.columns > div > div > p:nth-of-type(3) picture,
+.columns > div > div > p:nth-of-type(3) img {
+  display: block;
+  width: 430px;
+  height: 430px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 0;
+  margin: 0;
+  background: #fff;
+}
+
+@media (width <= 900px) {
+  .columns > div > div > p:nth-of-type(3) picture,
+  .columns > div > div > p:nth-of-type(3) img {
+    width: 86vw;
+    height: auto;
+    max-width: 340px;
+    margin: 0 auto;
+    aspect-ratio: unset;
+  }
+}
+
+/* Hide all other content except first h2, first two paragraphs, and image paragraph */
+.columns > div > div > :not(h2, p:nth-of-type(1), p:nth-of-type(2), p:nth-of-type(3)) {
+  display: none;
 }

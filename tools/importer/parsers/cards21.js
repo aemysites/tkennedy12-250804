@@ -1,41 +1,59 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Cards (cards21) block
+  // Header row for the table, exactly as in the example
   const headerRow = ['Cards (cards21)'];
 
-  // Find card container (works for the provided nested structure)
-  // Robust for future cards: aggregate all .card-body elements under this block
-  const cardBodies = element.querySelectorAll('.card-body');
-  const rows = [headerRow];
+  // Find all immediate or nested card bodies within the element
+  // This supports multiple cards (multiple .card-body's)
+  let cardBodies = element.querySelectorAll('.card-body');
+  // If there's only one card and it's the element itself, make an array with the element
+  if (cardBodies.length === 0 && element.classList.contains('card-body')) {
+    cardBodies = [element];
+  }
 
-  cardBodies.forEach(cardBody => {
-    // Find the image: first <img> in the card
-    const img = cardBody.querySelector('img');
+  // Compose rows for each card
+  const cardRows = Array.from(cardBodies).map((cardBody) => {
+    // Extract image (first <img> in card-body)
+    const image = cardBody.querySelector('img');
 
-    // Find the heading: .h4-heading (may be missing in other cards)
+    // Extract title: <div class="h4-heading"> or similar
     const heading = cardBody.querySelector('.h4-heading');
-
-    // Find supporting description (e.g., <p>, <div> after the heading, if present)
-    // In this HTML, there is no description, but let's check for possible text after heading.
-    const textContentElements = [];
-    if (heading) textContentElements.push(heading);
-    // Check for any description nodes after the heading
-    let node = heading ? heading.nextSibling : cardBody.firstChild;
-    while (node) {
-      if (node.nodeType === 1 && node !== img) { // ELEMENT_NODE and not the image
-        textContentElements.push(node);
+    let titleEl = null;
+    if (heading) {
+      // retain heading semantics if possible
+      if (/^h[1-6]$/i.test(heading.tagName)) {
+        titleEl = heading;
+      } else {
+        // If not a heading element, wrap in <strong>
+        titleEl = document.createElement('strong');
+        titleEl.textContent = heading.textContent;
       }
-      node = node.nextSibling;
     }
-    // Fallback: if only heading is present, that's fine
-    // If heading is missing, try to use cardBody.textContent (shouldn't happen in this sample)
 
-    rows.push([
-      img,
-      textContentElements.length ? textContentElements : ''
-    ]);
+    // Extract description (text nodes after heading, if present)
+    const textCellContent = [];
+    if (titleEl) textCellContent.push(titleEl);
+    let foundHeading = false;
+    Array.from(cardBody.childNodes).forEach((node) => {
+      if (node === heading) {
+        foundHeading = true;
+        return;
+      }
+      if (!foundHeading) return;
+      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+        const p = document.createElement('p');
+        p.textContent = node.textContent.trim();
+        textCellContent.push(p);
+      } else if (node.nodeType === Node.ELEMENT_NODE && node !== image && node.textContent.trim()) {
+        textCellContent.push(node);
+      }
+    });
+    const textCell = textCellContent.length === 1 ? textCellContent[0] : textCellContent;
+    return [image, textCell];
   });
 
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Compose the table rows: header + all cards
+  const tableRows = [headerRow, ...cardRows];
+  const table = WebImporter.DOMUtils.createTable(tableRows, document);
   element.replaceWith(table);
 }

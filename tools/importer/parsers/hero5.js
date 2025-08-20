@@ -1,39 +1,40 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Header row with block name exactly matching the example
+  // Header row must match example exactly
   const headerRow = ['Hero (hero5)'];
 
-  // 2. Get the hero image (background image)
-  // It's the only <img> inside the main grid, outside the content area
-  let heroImg = element.querySelector('img[src]');
-  // If not found, leave as null (will create a row with empty cell)
+  // Find prominent image (should be the only <img> child at top-level)
+  const img = element.querySelector('img');
+  // If no image, use null for cell
+  const imageCell = img || '';
 
-  // 3. Get content: heading, paragraph, CTAs
-  // Find the innermost grid with the actual textual content (with heading)
-  let contentGrid = null;
-  const innerGrids = element.querySelectorAll('.grid-layout');
-  for (const g of innerGrids) {
-    if (g.querySelector('h1, h2, h3, h4, h5, h6')) {
-      contentGrid = g;
-      break;
+  // Find main content block containing headline, paragraph, CTA
+  // The structure is: section > grid > grid > section (with h2, .rich-text, .button-group)
+  // Safely get the section with the text/buttons
+  let contentSection = null;
+  const innerGrids = element.querySelectorAll(':scope > div > div');
+  // Usually first inner grid's first child is the section
+  if (innerGrids.length) {
+    const possibleSection = innerGrids[0].querySelector(':scope > div');
+    if (possibleSection) {
+      contentSection = possibleSection;
+    } else {
+      // Fallback
+      contentSection = innerGrids[0];
     }
+  } else {
+    // fallback: look for .section class in descendants
+    contentSection = element.querySelector('.section');
   }
+  
+  const contentCell = contentSection || '';
 
-  // Defensive: If contentGrid is found, extract only the actual content area (div with class 'section')
-  let content = contentGrid ? contentGrid.querySelector('.section') : null;
-  // If not found, fallback to grid itself
-  if (!content && contentGrid) {
-    content = contentGrid;
-  }
-
-  // Compose table rows as specified: 1 col, 3 rows
-  const rows = [
+  // Build final table (1 column, 3 rows)
+  const cells = [
     headerRow,
-    [heroImg],
-    [content]
+    [imageCell],
+    [contentCell]
   ];
-
-  // Create the table and replace the block
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

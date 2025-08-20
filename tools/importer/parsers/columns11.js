@@ -1,36 +1,69 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid containers (top = text columns, bottom = image columns)
-  const mainContainers = element.querySelectorAll(':scope > div');
-  // Defensive: check if expected structure exists
-  if (!mainContainers || mainContainers.length < 2) return;
-  const topGrid = mainContainers[0].querySelector('.grid-layout'); // contains the 2 columns of text
-  const bottomGrid = mainContainers[1].querySelector('.grid-layout'); // contains the 2 image columns
+  // Get the main two-column grid: first row of the layout
+  const mainGrid = element.querySelector('.w-layout-grid.grid-layout.tablet-1-column');
+  let leftCol = null, rightCol = null;
+  if (mainGrid) {
+    const gridChildren = mainGrid.querySelectorAll(':scope > div');
+    leftCol = gridChildren[0];
+    rightCol = gridChildren[1];
+  }
 
-  // Defensive: check grids
-  if (!topGrid || !bottomGrid) return;
+  // Get left content (eyebrow, heading)
+  const leftContent = [];
+  if (leftCol) {
+    Array.from(leftCol.childNodes).forEach(node => {
+      // Only push Elements or significant Text nodes
+      if (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim())) {
+        leftContent.push(node);
+      }
+    });
+  }
 
-  // --- Top row: two content columns (left = titles, right = card content) ---
-  const topCols = Array.from(topGrid.children);
-  // left column: 'Trend alert', h1
-  const topLeft = topCols[0];
-  // right column: description, author block, button
-  const topRight = topCols[1];
+  // Get right content (paragraph, byline, button, etc)
+  const rightContent = [];
+  if (rightCol) {
+    Array.from(rightCol.childNodes).forEach(node => {
+      if (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim())) {
+        rightContent.push(node);
+      }
+    });
+  }
 
-  // --- Bottom row: two image columns ---
-  const bottomCols = Array.from(bottomGrid.children);
-  const bottomLeft = bottomCols[0];
-  const bottomRight = bottomCols[1];
+  // Get lower image grid (two images)
+  const imageGrid = element.querySelector('.w-layout-grid.grid-layout.mobile-portrait-1-column');
+  let imageCells = [];
+  if (imageGrid) {
+    const imgs = Array.from(imageGrid.querySelectorAll('img'));
+    imageCells = imgs;
+  }
 
-  // Table block header
+  // Build table in the structure of the markdown example:
+  // header row: [Columns (columns11)]
+  // second row: [main info col, image col]
+  // third row:  [image col, info col]
   const headerRow = ['Columns (columns11)'];
 
-  // Compose table rows, referencing existing elements for block resilience
+  // First row - left: all info, right: first image
+  const firstImg = imageCells[0] || '';
+  const secondImg = imageCells[1] || '';
+  const row1 = [
+    [...leftContent, ...rightContent],
+    firstImg
+  ];
+
+  // Second row - left: second image, right: (empty)
+  const row2 = [
+    secondImg,
+    ''
+  ];
+
   const cells = [
     headerRow,
-    [topLeft, topRight],
-    [bottomLeft, bottomRight]
+    row1,
+    row2
   ];
+
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

@@ -1,27 +1,41 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid layout containing the columns
-  const grid = element.querySelector('.grid-layout');
+  // Find main grid (the two columns)
+  const grid = element.querySelector('.w-layout-grid');
   if (!grid) return;
+  const children = Array.from(grid.children);
+  // Defensive: Check we have at least 2 columns
+  if (children.length < 2) return;
 
-  // Get the immediate children of the grid, which correspond to columns
-  const columns = Array.from(grid.children);
+  // Identify left and right columns
+  let leftCol, rightCol;
+  // Look for the image element (should be one of the columns)
+  if (children[0].tagName === 'IMG') {
+    leftCol = children[0];
+    rightCol = children[1];
+  } else if (children[1].tagName === 'IMG') {
+    leftCol = children[1];
+    rightCol = children[0];
+  } else {
+    // fallback, just use order
+    leftCol = children[0];
+    rightCol = children[1];
+  }
 
-  // Defensive: Only process if there is at least one column
-  if (columns.length < 1) return;
+  // The rightCol content may be wrapped in a div, we want all its children
+  let rightContent = [];
+  if (rightCol.children.length > 0) {
+    rightContent = Array.from(rightCol.children);
+  } else {
+    rightContent = [rightCol];
+  }
 
-  // The header row must be a single column (single cell)
-  const headerRow = ['Columns (columns1)'];
+  // Build the columns block table
+  const table = WebImporter.DOMUtils.createTable([
+    ['Columns (columns1)'],
+    [leftCol, rightContent]
+  ], document);
 
-  // The next row contains all columns as separate cells
-  const contentRow = columns;
-
-  // Compose the table cells as specified: header is a single cell, content row has N columns
-  const cells = [
-    headerRow,
-    contentRow
-  ];
-
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  // Replace the original element
   element.replaceWith(table);
 }

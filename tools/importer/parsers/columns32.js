@@ -1,26 +1,27 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid holding the columns
-  const grid = element.querySelector('.w-layout-grid, .grid-layout');
+  // Locate the grid container with the two columns
+  const grid = element.querySelector('.w-layout-grid');
   if (!grid) return;
-  // Get all direct children of the grid (columns)
+  // Get direct children of the grid (columns)
   const columns = Array.from(grid.children);
+  // Find image and text columns
+  const imageCol = columns.find(el => el.tagName === 'IMG');
+  const textCol = columns.find(el => el !== imageCol);
 
-  // For this design, the first column is img, the second is a div with all text info
-  // Both should be referenced directly so as to retain all content and formatting
+  // For imageCol, use the image element directly
+  // For textCol, use the entire container (all content)
 
-  // Table header as per requirements
   const headerRow = ['Columns (columns32)'];
+  const contentRow = [imageCol, textCol];
 
-  // Table row: each cell is a column from the grid
-  const contentRow = columns.map((col) => col);
+  // Only one table, no Section Metadata block needed
+  // All text and visual elements are referenced, nothing is hardcoded
 
-  // Create the columns block table
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
     contentRow
   ], document);
 
-  // Replace the original element with the block table
   element.replaceWith(table);
 }

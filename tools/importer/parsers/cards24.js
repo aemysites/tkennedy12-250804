@@ -1,26 +1,30 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
+  // Header row as per the block name
   const headerRow = ['Cards (cards24)'];
   const rows = [headerRow];
 
-  // Each card is an <a> child of the main grid
-  const cards = element.querySelectorAll(':scope > a');
+  // Each card is a direct <a> child of the grid
+  const cards = element.querySelectorAll(':scope > a.utility-link-content-block');
   cards.forEach(card => {
-    // Image: always inside a <div> near the top, contains <img>
-    const imgDiv = card.querySelector('div.utility-aspect-2x3');
-    const imgEl = imgDiv ? imgDiv.querySelector('img') : null;
-
-    // Text content: tag/date and title
-    // Wrap the tag/date row and the title as they are in the card
-    const contentFragment = document.createDocumentFragment();
-    const metaDiv = card.querySelector('div.flex-horizontal');
-    if (metaDiv) contentFragment.appendChild(metaDiv);
-    const title = card.querySelector('h3');
-    if (title) contentFragment.appendChild(title);
-
+    // Image: find the <img> inside the first div.utility-aspect-2x3
+    const imageDiv = card.querySelector('.utility-aspect-2x3');
+    let image = null;
+    if (imageDiv) {
+      image = imageDiv.querySelector('img');
+    }
+    // Text content (tag/date and heading)
+    const textContent = [];
+    // Tag + date
+    const tagRow = card.querySelector('.flex-horizontal');
+    if (tagRow) textContent.push(tagRow);
+    // Heading
+    const heading = card.querySelector('h3, .h4-heading');
+    if (heading) textContent.push(heading);
+    // Add the row if at least image and heading exist (robust to missing fields)
     rows.push([
-      imgEl,
-      contentFragment
+      image,
+      textContent
     ]);
   });
 

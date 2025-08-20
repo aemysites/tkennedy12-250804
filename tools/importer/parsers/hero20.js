@@ -1,52 +1,41 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row
+  // 1. Table header
   const headerRow = ['Hero (hero20)'];
 
-  // 2nd row: Background Images (all <img> under hero background grid)
-  // Locate the grid containing all images
-  const grid = element.querySelector('.ix-hero-scale-3x-to-1x .grid-layout');
-  let images = [];
+  // 2. Background images (all images in the background collage)
+  // Locate the grid of images (the first .grid-layout with .desktop-3-column)
+  let backgroundImages = [];
+  const grid = element.querySelector('.grid-layout.desktop-3-column.utility-min-height-100dvh');
   if (grid) {
-    images = Array.from(grid.querySelectorAll('img'));
-  }
-  // Place all images in a <div> for layout preservation
-  let bgCell;
-  if (images.length) {
-    const bgDiv = document.createElement('div');
-    images.forEach(img => bgDiv.appendChild(img));
-    bgCell = bgDiv;
-  } else {
-    bgCell = '';
-  }
-
-  // 3rd row: Content (heading, subheading, CTAs)
-  // Find the container with text content
-  const contentContainer = element.querySelector('.ix-hero-scale-3x-to-1x-content .container');
-  let contentCell = '';
-  if (contentContainer) {
-    // Reference all existing structural children (h1, p, buttons), preserving order
-    const nodes = Array.from(contentContainer.childNodes).filter(node => {
-      // Only include element nodes (skip whitespace text nodes)
-      return node.nodeType === Node.ELEMENT_NODE;
+    const imgWrappers = grid.querySelectorAll('.utility-position-relative');
+    imgWrappers.forEach(div => {
+      const img = div.querySelector('img');
+      if (img) backgroundImages.push(img);
     });
-    if (nodes.length === 1) {
-      // Single container child (unlikely but possible)
-      contentCell = nodes[0];
-    } else if (nodes.length > 1) {
-      // Wrap all relevant children in a <div> for combined content
-      const contentDiv = document.createElement('div');
-      nodes.forEach(child => contentDiv.appendChild(child));
-      contentCell = contentDiv;
+  }
+  // If no images found, fallback to blank
+  const backgroundCell = backgroundImages.length ? backgroundImages : '';
+
+  // 3. Content cell (headline, subheading, CTA buttons)
+  // Find the text content container (inside .ix-hero-scale-3x-to-1x-content .container)
+  let contentCell = '';
+  const contentSection = element.querySelector('.ix-hero-scale-3x-to-1x-content');
+  if (contentSection) {
+    const textContainer = contentSection.querySelector('.container');
+    if (textContainer) {
+      contentCell = textContainer;
+    } else {
+      contentCell = contentSection;
     }
   }
 
+  // Compose the table rows
   const cells = [
     headerRow,
-    [bgCell],
-    [contentCell]
+    [backgroundCell],
+    [contentCell],
   ];
-
   const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

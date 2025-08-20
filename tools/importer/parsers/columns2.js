@@ -1,47 +1,42 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Ensure we have a section with a .container
-  const container = element.querySelector('.container');
-  if (!container) return;
-  const grid = container.querySelector('.grid-layout');
+  // 1. Find the grid-layout containing the columns
+  const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  // The columns structure is:
-  // [0]: Big left feature <a>
-  // [1]: Upper-right column with 2 <a>
-  // [2]: Lower-right column with 6 <a> separated by .divider
-  const children = Array.from(grid.children);
-  if (children.length < 3) return;
-  const leftBlock = children[0];
-  const upperRight = children[1];
-  const lowerRight = children[2];
+  // The grid's children are laid out in a specific order:
+  // [0]: main (large) left content (as a <a>)
+  // [1]: upper right: vertical flex with two <a>s (with images)
+  // [2]: lower right: vertical flex with multiple <a>s (text only, separated by dividers)
 
-  // LEFT COLUMN: reference the existing leftBlock as is
+  const gridChildren = Array.from(grid.children);
 
-  // RIGHT COLUMN: gather all <a> from upperRight and lowerRight in order, preserving structure
-  const rightCol = document.createElement('div');
-  // First, all links from upperRight
-  const upperRightLinks = Array.from(upperRight.querySelectorAll(':scope > a'));
-  upperRightLinks.forEach(a => rightCol.appendChild(a));
-  // Then, all links from lowerRight separated by divider, but we only want the links (not dividers)
-  const lowerRightChildren = Array.from(lowerRight.children);
-  lowerRightChildren.forEach((child, idx) => {
-    if (child.tagName === 'A') {
-      rightCol.appendChild(child);
-    }
-    // Ignore dividers (.divider)
-  });
+  // Column 1: main (large) left <a>
+  const col1 = gridChildren.find(el => el.tagName === 'A');
 
-  // Header row exactly as required
-  const headerRow = ['Columns (columns2)'];
+  // Column 2: first flex-horizontal (with two <a>s)
+  const flexHorizontals = gridChildren.filter(el => el.classList.contains('flex-horizontal'));
+  // The first flex-horizontal contains the two <a>s with images
+  const col2Wrap = flexHorizontals[0];
+  // Column 3: the second flex-horizontal contains the stack of text links
+  const col3Wrap = flexHorizontals[1];
 
-  // One row, two columns, as in the example
-  const contentRow = [leftBlock, rightCol];
+  // Defensive: check existence
+  if (!col1 || !col2Wrap || !col3Wrap) return;
 
-  // Create and replace
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
-  element.replaceWith(table);
+  // For column 2: take all top-level <a>s in col2Wrap
+  const col2Links = Array.from(col2Wrap.querySelectorAll(':scope > a'));
+  // For column 3: take all top-level <a>s in col3Wrap
+  const col3Links = Array.from(col3Wrap.querySelectorAll(':scope > a'));
+
+  // Compose cells: reference existing elements ONLY, not clones
+  // Cells: [col1, [col2Link1, col2Link2], [col3Link1, ..., col3LinkN]]
+  const cells = [
+    ['Columns (columns2)'],
+    [col1, col2Links, col3Links]
+  ];
+
+  // Create the block table
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

@@ -1,4 +1,3 @@
-/* stylelint-disable no-descending-specificity */
 .columns > div {
   display: flex;
   flex-direction: row;
@@ -2035,21 +2034,9 @@
 .columns.columns16 > div > div > *:not(h2, p:nth-of-type(1), p:nth-of-type(2), p:has(picture), p:has(img)) {
   display: none;
 }
-
-/* Row flex layout: ensure columns sit side by side */
-
-/* Left column: stack content vertically, align to top, visually anchor heading */
-
-/* Heading styling: bold and left-aligned with less bottom margin */
-
-/* Remove extra margin below heading if no paragraph present */
 .columns > div > div:first-child h2 + p {
   margin-top: 0;
 }
-
-/* Paragraph styling (if present) */
-
-/* Button styling for left column, if present */
 .columns > div > div:first-child .button,
 .columns > div > div:first-child button {
   border: 1px solid #333;
@@ -2076,24 +2063,14 @@
   color: #111;
   border-color: #222;
 }
-
-/* Right column: image only, align image to top */
-
-/* Hide all but the first p (the image) and any lists in the right column */
 .columns > div > div:last-child > p:not(:first-child),
 .columns > div > div:last-child > ul,
 .columns > div > div:last-child > ol {
   display: none;
 }
-
-/* Remove the unwanted decorative line above the image */
 .columns > div > div:last-child > p:first-child::before {
   display: none;
 }
-
-/* Style the image to be landscape, large, left-aligned, and visually dominant */
-
-/* Make sure the image fills the space, keeps aspect, and is anchored to top */
 .columns > div > div:last-child > p:first-child img,
 .columns > div > div:last-child > p:first-child picture {
   display: block;
@@ -2107,8 +2084,6 @@
   background: #fff;
   margin: 0;
 }
-
-/* Responsive stacking for mobile */
 @media (width <= 900px) {
   .columns {
     flex-direction: column;
@@ -2146,5 +2121,130 @@
   .columns > div > div:last-child > p:first-child picture {
     max-width: 100vw;
     border-radius: 12px;
+  }
+}
+
+
+.columns {
+  background: #fff;
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 40px 0 0 0;
+  box-sizing: border-box;
+}
+
+.columns > div {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Top align items so heading matches top of image */
+  justify-content: flex-start;
+  gap: 56px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+}
+
+/* Left column (text) */
+.columns > div > div:first-child {
+  flex: 0 1 340px;
+  max-width: 340px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.columns > div > div:first-child h2 {
+  font-size: var(--heading-font-size-xl);
+  font-family: var(--heading-font-family);
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 28px 0;
+  line-height: 1.15;
+  text-align: left;
+}
+
+/* Hide all but heading in left column for compactness */
+.columns > div > div:first-child > *:not(h2) {
+  display: none;
+}
+
+/* Right column (image/video) */
+.columns > div > div:last-child {
+  flex: 0 1 560px;
+  max-width: 560px;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  margin: 0;
+}
+
+/* Show only the first picture or image in the right column */
+.columns > div > div:last-child > *:not(:first-child) {
+  display: none;
+}
+
+.columns > div > div:last-child picture,
+.columns > div > div:last-child img {
+  display: block;
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+  margin: 0;
+  box-shadow: 0 6px 32px 0 rgb(0 0 0 / 10%);
+  background: #fff;
+}
+
+/* Responsive: stack columns vertically on smaller screens */
+@media (max-width: 900px) {
+  .columns {
+    padding: 28px 0 0 0;
+    max-width: 100vw;
+  }
+  .columns > div {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    max-width: 100vw;
+    padding: 0 12px;
+  }
+  .columns > div > div {
+    width: 100%;
+    max-width: 100vw;
+    align-items: flex-start;
+    text-align: left;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  .columns > div > div:first-child {
+    align-items: flex-start;
+    text-align: left;
+    max-width: 100vw;
+  }
+  .columns > div > div:first-child h2 {
+    text-align: left;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .columns > div > div:last-child {
+    align-items: flex-start;
+    text-align: left;
+    max-width: 100vw;
+  }
+  .columns > div > div:last-child picture,
+  .columns > div > div:last-child img {
+    max-width: 95vw;
+    border-radius: 14px;
   }
 }

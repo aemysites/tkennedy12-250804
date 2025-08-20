@@ -1330,8 +1330,17 @@
 
 .columns {
   background: #fff;
-  padding: 0;
-  margin: 0;
+  padding: 0 36px 36px;
+  margin: 48px auto 0;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 36px;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+  min-height: 340px;
 }
 
 @media (width <= 900px) {
@@ -1350,7 +1359,7 @@
 }
 
 .columns > div > div:first-child {
-  flex: 1 1 50%;
+  flex: 0 1 360px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1359,25 +1368,32 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
+  max-width: 380px;
+  gap: 0;
 }
 
 .columns > div > div:first-child h2 {
   margin-top: 0;
   margin-bottom: 38px;
-  font-size: 1.4em;
+  font-size: 2rem;
   font-weight: 600;
   color: #222;
-  line-height: 1.18;
+  line-height: 1.15;
+  font-family: var(--heading-font-family);
+  letter-spacing: -0.01em;
+  text-align: left;
+  max-width: 18ch;
 }
 
 .columns > div > div:first-child p {
-  margin: 0 0 38px;
+  margin: 0 0 18px;
   padding: 0;
-  color: #222;
-  font-size: 17px;
-  line-height: 1.45;
-  max-width: 650px;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.5;
+  max-width: 34em;
   position: relative;
+  text-align: left;
 }
 
 .columns > div > div:first-child p:nth-of-type(1)::before,
@@ -1394,7 +1410,7 @@
 }
 
 .columns > div > div:last-child {
-  flex: 1 1 50%;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1403,6 +1419,7 @@
   box-sizing: border-box;
   padding: 0;
   gap: 24px;
+  position: relative;
 }
 
 .columns > div > div:last-child > p {
@@ -1412,9 +1429,11 @@
 .columns > div > div:last-child > p:first-child {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   margin: 0;
   padding: 0;
+  justify-content: flex-start;
+  width: 100%;
 }
 
 .columns > div > div:last-child picture,
@@ -1896,7 +1915,6 @@
   padding: 0;
 }
 
-/* Outer container: two columns side by side */
 .columns.columns16 > div {
   display: flex;
   flex-direction: row;
@@ -1909,7 +1927,6 @@
   box-sizing: border-box;
 }
 
-/* Responsive: stack columns on mobile */
 @media (width <= 900px) {
   .columns.columns16 > div {
     flex-direction: column;
@@ -1919,7 +1936,6 @@
   }
 }
 
-/* Left column: vertical stack for heading and paragraphs */
 .columns.columns16 > div > div {
   display: flex;
   flex-direction: column;
@@ -1931,7 +1947,6 @@
   gap: 0;
 }
 
-/* Heading */
 .columns.columns16 > div > div > h2 {
   font-family: var(--heading-font-family);
   font-size: 2.5rem;
@@ -1955,7 +1970,6 @@
   }
 }
 
-/* Intro paragraphs: show and style */
 .columns.columns16 > div > div > p:nth-of-type(1),
 .columns.columns16 > div > div > p:nth-of-type(2) {
   display: block;
@@ -1979,9 +1993,6 @@
   }
 }
 
-/* Remove any accidental accent lines in p */
-
-/* Right column: image, aligned with top of heading+text block */
 .columns.columns16 > div > div > p:has(picture),
 .columns.columns16 > div > div > p:has(img) {
   align-self: flex-start;
@@ -2021,7 +2032,119 @@
   }
 }
 
-/* Show only heading, first two paragraphs, and image; hide all other p's and lists */
 .columns.columns16 > div > div > *:not(h2, p:nth-of-type(1), p:nth-of-type(2), p:has(picture), p:has(img)) {
   display: none;
+}
+
+/* Row flex layout: ensure columns sit side by side */
+
+/* Left column: stack content vertically, align to top, visually anchor heading */
+
+/* Heading styling: bold and left-aligned with less bottom margin */
+
+/* Remove extra margin below heading if no paragraph present */
+.columns > div > div:first-child h2 + p {
+  margin-top: 0;
+}
+
+/* Paragraph styling (if present) */
+
+/* Button styling for left column, if present */
+.columns > div > div:first-child .button,
+.columns > div > div:first-child button {
+  border: 1px solid #333;
+  background: #fff;
+  color: #222;
+  font-size: 1rem;
+  font-family: var(--body-font-family);
+  font-weight: 500;
+  padding: 10px 28px;
+  border-radius: 4px;
+  margin: 18px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.columns > div > div:first-child .button:hover,
+.columns > div > div:first-child button:hover,
+.columns > div > div:first-child .button:focus,
+.columns > div > div:first-child button:focus {
+  background: #f5f5f5;
+  color: #111;
+  border-color: #222;
+}
+
+/* Right column: image only, align image to top */
+
+/* Hide all but the first p (the image) and any lists in the right column */
+.columns > div > div:last-child > p:not(:first-child),
+.columns > div > div:last-child > ul,
+.columns > div > div:last-child > ol {
+  display: none;
+}
+
+/* Remove the unwanted decorative line above the image */
+.columns > div > div:last-child > p:first-child::before {
+  display: none;
+}
+
+/* Style the image to be landscape, large, left-aligned, and visually dominant */
+
+/* Make sure the image fills the space, keeps aspect, and is anchored to top */
+.columns > div > div:last-child > p:first-child img,
+.columns > div > div:last-child > p:first-child picture {
+  display: block;
+  width: 560px;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  object-fit: cover;
+  box-shadow: none;
+  background: #fff;
+  margin: 0;
+}
+
+/* Responsive stacking for mobile */
+@media (width <= 900px) {
+  .columns {
+    flex-direction: column;
+    gap: 24px;
+    max-width: 100vw;
+    padding: 0 12px 24px;
+    min-height: unset;
+  }
+
+  .columns > div {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+  }
+
+  .columns > div > div:first-child,
+  .columns > div > div:last-child {
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 100vw;
+    justify-content: flex-start;
+    gap: 0;
+  }
+
+  .columns > div > div:first-child h2,
+  .columns > div > div:first-child p {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .columns > div > div:last-child > p:first-child img,
+  .columns > div > div:last-child > p:first-child picture {
+    max-width: 100vw;
+    border-radius: 12px;
+  }
 }

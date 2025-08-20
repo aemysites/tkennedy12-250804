@@ -1,42 +1,46 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Build the table header as in the example
-  const cells = [['Cards (cardsNoImages3)']];
+  // Table header matches example exactly
+  const headerRow = ['Cards (cardsNoImages3)'];
+  const cells = [headerRow];
 
-  // Locate container for cards: prefer .cmp-container, but fallback to element
-  const cardContainer = element.querySelector('.cmp-container') || element;
-
-  // Try to get all card blocks as direct children (for resilience)
-  let cardSections = Array.from(cardContainer.querySelectorAll(':scope > .text.parbase.section'));
-  // If not found, fallback to all .text.parbase.section descendants
-  if (cardSections.length === 0) {
-    cardSections = Array.from(cardContainer.querySelectorAll('.text.parbase.section'));
+  // Find the most likely container for the cards
+  // Handles both direct children and nested cmp-container structures
+  let cardComponents = [];
+  const cmpContainer = element.querySelector('.cmp-container');
+  if (cmpContainer) {
+    cardComponents = cmpContainer.querySelectorAll('.text-component');
+  } else {
+    cardComponents = element.querySelectorAll('.text-component');
   }
-
-  cardSections.forEach((section) => {
-    // The card content is in .text-component, but fallback to section if missing
-    const textComp = section.querySelector('.text-component') || section;
-    // Gather all relevant nodes (keep structure, preserve semantics)
-    const cardContent = [];
-    Array.from(textComp.childNodes).forEach((node) => {
-      // Only add non-empty elements and non-empty text
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        // Avoid empty divs (eg. first divs)
-        if (node.tagName === 'DIV' && node.textContent.trim() === '') return;
-        cardContent.push(node);
-      } else if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
-        // Wrap loose text nodes in a <span> so they're not lost
-        const span = document.createElement('span');
-        span.textContent = node.textContent;
-        cardContent.push(span);
+  // If none found, fallback to all .text.parbase.section blocks
+  if (!cardComponents.length) {
+    let wrappers = element.querySelectorAll('.text.parbase.section');
+    wrappers.forEach(wrapper => {
+      let tc = wrapper.querySelector('.text-component');
+      if(tc) cardComponents = [...cardComponents, tc];
+    });
+  }
+  // As last resort, look for all h3s and their parents
+  if (!cardComponents.length) {
+    let h3s = element.querySelectorAll('h3');
+    h3s.forEach(h3 => {
+      if (h3.parentElement && h3.parentElement !== element) {
+        cardComponents = [...cardComponents, h3.parentElement];
       }
     });
-    if (cardContent.length) {
-      cells.push([cardContent]);
-    }
+  }
+
+  // For each card, reference the block of content (all children of .text-component)
+  cardComponents.forEach(card => {
+    // Defensive: skip if empty/hidden
+    if (!card.textContent || !card.textContent.trim()) return;
+    cells.push([card]);
   });
 
-  // Create the block table
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  // Do not replace if no card rows (header only)
+  if (cells.length <= 1) return;
+
+  const blockTable = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(blockTable);
 }

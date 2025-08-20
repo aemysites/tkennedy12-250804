@@ -1,41 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find main grid (the two columns)
-  const grid = element.querySelector('.w-layout-grid');
-  if (!grid) return;
-  const children = Array.from(grid.children);
-  // Defensive: Check we have at least 2 columns
-  if (children.length < 2) return;
+  // Table header as in the markdown example
+  const headerRow = ['Columns (columns1)'];
+  
+  // Find the two columns (left and right) under .pwccol2-longform
+  const columns = element.querySelectorAll('.pwccol2-longform > .parsys_column');
+  
+  // Defensive: Make sure there are 2 columns
+  let leftCell = null;
+  let rightCell = null;
 
-  // Identify left and right columns
-  let leftCol, rightCol;
-  // Look for the image element (should be one of the columns)
-  if (children[0].tagName === 'IMG') {
-    leftCol = children[0];
-    rightCol = children[1];
-  } else if (children[1].tagName === 'IMG') {
-    leftCol = children[1];
-    rightCol = children[0];
+  // LEFT column: Rich text and button block
+  if (columns[0]) {
+    // Use the inner .cmp-container if exists, else the entire column
+    const leftCmp = columns[0].querySelector('.cmp-container');
+    leftCell = leftCmp ? leftCmp : columns[0];
   } else {
-    // fallback, just use order
-    leftCol = children[0];
-    rightCol = children[1];
+    leftCell = document.createTextNode('');
   }
 
-  // The rightCol content may be wrapped in a div, we want all its children
-  let rightContent = [];
-  if (rightCol.children.length > 0) {
-    rightContent = Array.from(rightCol.children);
+  // RIGHT column: Should contain the video asset
+  if (columns[1]) {
+    const rightCmp = columns[1].querySelector('.cmp-container');
+    rightCell = rightCmp ? rightCmp : columns[1];
   } else {
-    rightContent = [rightCol];
+    rightCell = document.createTextNode('');
   }
 
-  // Build the columns block table
-  const table = WebImporter.DOMUtils.createTable([
-    ['Columns (columns1)'],
-    [leftCol, rightContent]
-  ], document);
+  // Compose cells as [header row, content row of 2 columns]
+  const cells = [
+    headerRow,
+    [leftCell, rightCell]
+  ];
 
-  // Replace the original element
-  element.replaceWith(table);
+  // Create the block table and replace the element
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

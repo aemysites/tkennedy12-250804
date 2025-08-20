@@ -1,34 +1,46 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Table header matches the example exactly
+  // The header row for the Columns block
   const headerRow = ['Columns (columns18)'];
 
-  // 2. Find all immediate columns (should be two for this block)
+  // Attempt to get the column divs (structure may vary)
   const columns = element.querySelectorAll(':scope > .parsys_column');
-  if (columns.length < 2) return; // Edge case: bail if not a two-column block
+  // Ensure there are two columns as in the example
+  if (columns.length !== 2) return;
 
-  // 3. LEFT COLUMN: Image (reference the existing img element)
-  let leftCellContent = [];
-  const leftImg = columns[0].querySelector('img');
-  if (leftImg) leftCellContent.push(leftImg);
-
-  // 4. RIGHT COLUMN: Text content, preserve headings, paragraphs, link
-  let rightCellContent = [];
-  const textComp = columns[1].querySelector('.text-component');
-  if (textComp) {
-    // Reference <h3> if present
-    const h3 = textComp.querySelector('h3');
-    if (h3) rightCellContent.push(h3);
-    // Reference all <p> (including one with the link)
-    const ps = textComp.querySelectorAll('p');
-    ps.forEach(p => rightCellContent.push(p));
+  // First column: contains image
+  let imageCell = '';
+  const firstCol = columns[0];
+  // Try to find an <img> inside the first column
+  const img = firstCol.querySelector('img');
+  if (img) {
+    imageCell = img;
+  } else {
+    // If no image, fallback to whatever content the column has (empty string if nothing)
+    imageCell = firstCol.innerHTML.trim() ? firstCol : '';
   }
 
-  // 5. If any column is empty, still render the cell as empty (should not error)
-  // 6. The semantic meaning of the source HTML is preserved (heading, paragraphs, button)
-  // 7. Reference existing elements (not clones, not innerHTML)
-  // 8. Table header is correct and no extra tables/hr/metadata blocks
-  const cells = [headerRow, [leftCellContent, rightCellContent]];
+  // Second column: contains text content (heading, paragraph, link/button)
+  let textCell = '';
+  const secondCol = columns[1];
+  // Find the main text container (it may vary, so be flexible)
+  const textComponent = secondCol.querySelector('.text-component');
+  if (textComponent) {
+    textCell = textComponent;
+  } else {
+    // fallback to the full column, preserving all content
+    textCell = secondCol.innerHTML.trim() ? secondCol : '';
+  }
+
+  // Build cells for the table: first row is header, second is the columns
+  const cells = [
+    headerRow,
+    [imageCell, textCell]
+  ];
+
+  // Create the block table using the helper
   const block = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Replace the original element with the block table
   element.replaceWith(block);
 }

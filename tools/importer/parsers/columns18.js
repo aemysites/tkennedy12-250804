@@ -1,37 +1,40 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid container
+  // 1. Prepare the header row exactly matching the block name
+  const headerRow = ['Columns (columns18)'];
+
+  // 2. Find the grid container that holds columns
   const grid = element.querySelector('.w-layout-grid');
   if (!grid) return;
 
-  // Identify columns in the grid
-  let textCol = null;
-  let contactCol = null;
-  let imageCol = null;
-
-  for (const child of grid.children) {
-    if (child.tagName === 'DIV' && !textCol) {
-      textCol = child;
-    } else if (child.tagName === 'UL' && !contactCol) {
-      contactCol = child;
-    } else if (child.tagName === 'IMG' && !imageCol) {
-      imageCol = child;
+  // 3. Find the column children by their tag type/order
+  // The structure is: [contentDiv, contactList, image]
+  let contentDiv = null, contactList = null, image = null;
+  Array.from(grid.children).forEach(child => {
+    if (child.tagName === 'DIV') {
+      contentDiv = child;
+    } else if (child.tagName === 'UL') {
+      contactList = child;
+    } else if (child.tagName === 'IMG') {
+      image = child;
     }
-  }
+  });
 
-  // Compose left column content (text + contact info)
-  const leftColContent = [];
-  if (textCol) leftColContent.push(textCol);
-  if (contactCol) leftColContent.push(contactCol);
+  // Robustly handle missing children
+  const leftColArr = [];
+  if (contentDiv) leftColArr.push(contentDiv);
+  if (contactList) leftColArr.push(contactList);
+  const rightColArr = image ? [image] : [];
 
-  // Header row must have two cells to match block structure exactly
-  const headerRow = ['Columns (columns18)', ''];
-  const contentRow = [leftColContent, imageCol ? imageCol : ''];
+  // Both columns must be present, but can be empty if not found
+  const columnsRow = [leftColArr, rightColArr];
 
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
+  // 4. Build the table cells array; 2 columns per row
+  const cells = [headerRow, columnsRow];
 
+  // 5. Create the block using the helper
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  // 6. Replace the original element
   element.replaceWith(table);
 }

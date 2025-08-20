@@ -1,29 +1,56 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid layout block containing columns
+  // Find the 2-column grid layout
   const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  // Get immediate columns (often two: one text, one image)
+  // Get all immediate children of the grid -- expect two (content and image)
   const columns = Array.from(grid.children);
   if (columns.length < 2) return;
 
-  // Reference the actual content blocks
-  const firstCol = columns[0];
-  const secondCol = columns[1];
+  // First column (text content)
+  const left = columns[0];
+  // Second column (image)
+  const right = columns[1];
 
-  // Table header as per specification
+  // Left column: gather all direct children (eyebrow, heading, paragraphs, button)
+  const leftNodes = Array.from(left.childNodes)
+    .filter((node) => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        // Filter out empty text nodes
+        return node.textContent.trim().length > 0;
+      }
+      return true;
+    });
+
+  // Right column: likely an image element
+  let rightCellContent = [];
+  if (right.tagName === 'IMG') {
+    rightCellContent = [right];
+  } else {
+    // Could be a container, find any images
+    const imgs = right.querySelectorAll('img');
+    if (imgs.length > 0) {
+      rightCellContent = Array.from(imgs);
+    } else {
+      // Fallback: all direct children
+      rightCellContent = Array.from(right.childNodes).filter((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          return node.textContent.trim().length > 0;
+        }
+        return true;
+      });
+    }
+  }
+
+  // Table structure: Header row, then one row with two columns
   const headerRow = ['Columns (columns27)'];
+  const contentRow = [leftNodes, rightCellContent];
 
-  // Organize table rows: block name header, then two columns
-  const contentRow = [firstCol, secondCol];
-
-  // Use createTable to make the block
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
     contentRow
   ], document);
 
-  // Replace the original element in-place
   element.replaceWith(table);
 }

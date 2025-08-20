@@ -1,37 +1,46 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the grid container containing the columns
-  const grid = element.querySelector('.w-layout-grid');
+  // Header row, exactly as specified
+  const headerRow = ['Columns (columns16)'];
+
+  // Find the grid layout containing the columns
+  const grid = element.querySelector('.grid-layout');
   if (!grid) return;
 
-  // Get the immediate grid children (each is a column block)
-  const columnDivs = Array.from(grid.children);
+  // Each direct child of grid is a column
+  const gridColumns = Array.from(grid.children);
 
-  // For each column, extract *all* its visible content (not just images)
-  // Most columns have one direct content child, but could vary, so collect all children
-  const columnCells = columnDivs.map(col => {
-    // Get all nodes inside this column (usually a single div, but could be more)
-    const contentChildren = Array.from(col.children);
-    if (contentChildren.length === 1) {
-      // If only one child, return it directly for resilience
-      return contentChildren[0];
-    } else if (contentChildren.length > 1) {
-      // If multiple children, return all as an array
-      return contentChildren;
-    } else {
-      // If there are no children, fallback to the column itself
-      return col;
+  // For each column, extract ALL relevant content as a cell
+  const contentRow = gridColumns.map(col => {
+    // Get all descendants with content (elements or non-empty text nodes)
+    // In Webflow/WF exported columns structure, there may be an extra wrapper
+    // Prefer to grab all children below the column div
+    let target = col;
+    // If only one child and that child has at least one element, treat that as column content block
+    if (col.children.length === 1 && col.children[0].children.length > 0) {
+      target = col.children[0];
     }
+    // Gather all element children and meaningful text nodes
+    const nodes = [];
+    for (const node of target.childNodes) {
+      if (node.nodeType === 1) {
+        nodes.push(node);
+      } else if (
+        node.nodeType === 3 && node.textContent && node.textContent.trim().length > 0
+      ) {
+        // Create a span to preserve inline text node
+        const span = document.createElement('span');
+        span.textContent = node.textContent;
+        nodes.push(span);
+      }
+    }
+    // If nothing, fallback to the column itself
+    return nodes.length === 1 ? nodes[0] : nodes.length > 1 ? nodes : target;
   });
 
-  // Header as a single column (matches example)
-  const headerRow = ['Columns (columns16)'];
-  // Second row: as many columns as there are columns in the source grid
-  const contentRow = columnCells;
-  const cells = [headerRow, contentRow];
+  // Build table: header row (single cell), content row (multiple columns)
+  const tableArray = [headerRow, contentRow];
 
-  // Create the block table
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  // Replace the original element with the block
+  const block = WebImporter.DOMUtils.createTable(tableArray, document);
   element.replaceWith(block);
 }

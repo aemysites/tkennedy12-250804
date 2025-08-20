@@ -1,54 +1,54 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row as per spec
+  // Create the header row exactly matching the example
   const headerRow = ['Cards (cards10)'];
   const cells = [headerRow];
-
-  // Each card is an <a> child of element
-  const cardLinks = element.querySelectorAll(':scope > a');
-  cardLinks.forEach(card => {
-    // First cell: image (always present)
-    let image = null;
-    const imageDiv = card.querySelector('.utility-aspect-3x2');
+  // The cards are direct children <a> of the block element
+  const cards = Array.from(element.querySelectorAll(':scope > a'));
+  cards.forEach((card) => {
+    // Image is the first child div (may contain an img)
+    let imageCell = null;
+    const imageDiv = card.children[0];
     if (imageDiv) {
-      image = imageDiv.querySelector('img');
+      const img = imageDiv.querySelector('img');
+      if (img) {
+        imageCell = img;
+      } else {
+        imageCell = document.createElement('div');
+      }
+    } else {
+      imageCell = document.createElement('div');
     }
-
-    // Second cell: text content
-    const contentDiv = card.querySelector('.utility-padding-all-1rem');
-    const textCellEls = [];
-    if (contentDiv) {
-      // Tag (optional)
-      const tagDiv = contentDiv.querySelector('.tag-group');
-      if (tagDiv) {
-        // All tags in this tag-group
-        const tags = Array.from(tagDiv.querySelectorAll('.tag'));
-        if (tags.length > 0) {
-          // Wrap tags in a fragment
-          tags.forEach(tag => {
-            textCellEls.push(tag);
-          });
-          textCellEls.push(document.createElement('br'));
+    // Text is in the second child div
+    const textDiv = card.children[1];
+    // Compose text cell retaining semantic structure
+    const textCell = document.createElement('div');
+    // Tag (optional)
+    if (textDiv) {
+      const tagGroup = textDiv.querySelector('.tag-group');
+      if (tagGroup) {
+        const tag = tagGroup.querySelector('.tag');
+        if (tag) {
+          // Wrap tag in a div for separation, and reference the original element
+          const tagWrap = document.createElement('div');
+          tagWrap.appendChild(tag);
+          textCell.appendChild(tagWrap);
         }
       }
-      // Heading (h3 or .h4-heading)
-      const heading = contentDiv.querySelector('h3, .h4-heading');
+      // Heading (optional)
+      const heading = textDiv.querySelector('h3');
       if (heading) {
-        textCellEls.push(heading);
+        textCell.appendChild(heading);
       }
-      // Description (paragraph)
-      const desc = contentDiv.querySelector('p');
-      if (desc) {
-        textCellEls.push(desc);
+      // Description (optional)
+      const description = textDiv.querySelector('p');
+      if (description) {
+        textCell.appendChild(description);
       }
     }
-    // Only add non-null image and non-empty text cells
-    cells.push([
-      image || '',
-      textCellEls.length > 0 ? textCellEls : ''
-    ]);
+    cells.push([imageCell, textCell]);
   });
-
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  // Create and replace with the block table
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

@@ -1,53 +1,30 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Prepare the table rows array
-  const rows = [];
-  // Header row from the example (must be exact)
-  rows.push(['Accordion (accordion34)']);
+  // Create the header row as specified
+  const headerRow = ['Accordion (accordion34)'];
+  const rows = [headerRow];
 
-  // Find all accordion items (should be immediate children with class 'accordion')
-  const items = element.querySelectorAll(':scope > .accordion');
-
-  items.forEach((item) => {
-    // Title cell: element inside .w-dropdown-toggle with class .paragraph-lg
-    let titleCell = '';
-    const toggle = item.querySelector('.w-dropdown-toggle');
+  // Find all accordion sections (direct children)
+  const accordions = element.querySelectorAll(':scope > .accordion');
+  accordions.forEach((accordion) => {
+    // Title: usually inside .w-dropdown-toggle > .paragraph-lg
+    let title = '';
+    const toggle = accordion.querySelector('.w-dropdown-toggle');
     if (toggle) {
-      const paragraphLg = toggle.querySelector('.paragraph-lg');
-      if (paragraphLg) {
-        titleCell = paragraphLg;
-      } else {
-        // fallback: use toggle itself if .paragraph-lg missing
-        titleCell = toggle;
-      }
+      const titleDiv = toggle.querySelector('.paragraph-lg');
+      if (titleDiv) title = titleDiv;
     }
-    // Content cell: find the content inside nav.accordion-content
-    let contentCell = '';
-    const nav = item.querySelector('nav.accordion-content');
+    // Content: nav.accordion-content > first div (holds .rich-text)
+    let content = '';
+    const nav = accordion.querySelector('nav.accordion-content');
     if (nav) {
-      // Look for .rich-text, else use the first meaningful descendant
-      let found = null;
-      // Check for a .rich-text descendant
-      found = nav.querySelector('.rich-text');
-      if (!found) {
-        // fallback: use the nav's first child with content
-        for (const child of nav.children) {
-          if (child.textContent.trim()) {
-            found = child;
-            break;
-          }
-        }
-        if (!found && nav.textContent.trim()) {
-          found = nav;
-        }
-      }
-      contentCell = found || nav;
+      // Use all children of nav (usually a single .utility-padding-all-1rem)
+      // Reference the div, not clone
+      const firstDiv = nav.querySelector(':scope > div');
+      if (firstDiv) content = firstDiv;
     }
-    rows.push([titleCell, contentCell]);
+    rows.push([title || '', content || '']);
   });
-
-  // Create the block table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  // Replace the original element with the new table block
-  element.replaceWith(table);
+  const block = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(block);
 }

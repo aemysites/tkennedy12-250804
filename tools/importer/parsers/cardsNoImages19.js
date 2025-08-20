@@ -1,20 +1,21 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Create array of table rows, beginning with the header
+  // The block header
   const rows = [['Cards']];
 
-  // Select all immediate card divs
-  const cardDivs = element.querySelectorAll(':scope > div');
+  // Each card is a direct child <div> of the block
+  const cards = Array.from(element.querySelectorAll(':scope > div'));
 
-  cardDivs.forEach((card) => {
-    // Each card contains an icon (svg) and a p with text. Only use the <p>.
+  cards.forEach(card => {
+    // Each card has a <p> containing the card text; keep semantic meaning (as a paragraph)
     const p = card.querySelector('p');
     if (p) {
-      rows.push([p]); // Reference the existing paragraph element directly
+      // Reference the existing <p> element for resilience
+      rows.push([p]);
     }
   });
 
-  // Build table and replace original element
+  // Create the block table and replace the original element
   const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

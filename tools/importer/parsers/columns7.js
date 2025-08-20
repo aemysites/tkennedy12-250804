@@ -1,19 +1,14 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Gather all the columns (immediate children)
-  const columns = Array.from(element.querySelectorAll(':scope > div'));
-  if (columns.length === 0) return;
-
-  // The header row must be a single cell (one column)
   const headerRow = ['Columns (columns7)'];
-
-  // The content row must match the number of columns (one cell per column)
-  const contentRow = columns;
-
-  const table = WebImporter.DOMUtils.createTable([
+  // For each direct child (column), include *all* of its content (not just img)
+  const columns = Array.from(element.querySelectorAll(':scope > div'));
+  // Each cell is the array of all child nodes (preserves all markup/text)
+  const cells = columns.map(col => Array.from(col.childNodes));
+  const tableRows = [
     headerRow,
-    contentRow
-  ], document);
-
-  element.replaceWith(table);
+    cells
+  ];
+  const block = WebImporter.DOMUtils.createTable(tableRows, document);
+  element.replaceWith(block);
 }

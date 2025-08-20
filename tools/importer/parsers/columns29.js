@@ -1,16 +1,20 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the columns (immediate children)
+  // Get all direct children (columns) of the grid
   const columns = Array.from(element.querySelectorAll(':scope > div'));
-  // For each column, extract the contained image or fallback to empty string
-  const cells = columns.map(col => {
-    const img = col.querySelector('img');
-    return img ? img : '';
-  });
-  // Ensure header row is a single cell (matches the example exactly)
+  const colCount = columns.length || 1;
+  // Build the header row: block name in first cell, rest empty, must match number of columns
+  const headerRow = ['Columns (columns29)'];
+  while (headerRow.length < colCount) {
+    headerRow.push('');
+  }
+  // For each column, reference the original div
+  const cellsRow = columns.map((col) => col);
+  // Create the table
   const table = WebImporter.DOMUtils.createTable([
-    ['Columns (columns29)'], // header: exactly one column
-    cells // content row: as many columns as needed
+    headerRow,
+    cellsRow
   ], document);
+  // Replace the original element
   element.replaceWith(table);
 }

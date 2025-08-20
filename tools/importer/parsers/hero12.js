@@ -1,42 +1,44 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row
+  // Table header must match example
   const headerRow = ['Hero (hero12)'];
 
-  // Find the main grid (should contain two main children: bg image and content)
-  const grid = element.querySelector('.w-layout-grid.grid-layout');
+  // Get direct grid children
+  const gridDivs = element.querySelectorAll(':scope > .w-layout-grid > div');
 
-  // Row 2: Background image (first immediate child of grid with an img)
-  let bgImg = '';
-  if (grid && grid.children.length > 0) {
-    const imgDiv = grid.children[0];
-    const img = imgDiv.querySelector('img');
-    if (img) bgImg = img;
-  }
-
-  // Row 3: Foreground content (headline, subheading, cta)
-  // This is the entire content area/card, reference the main card body
-  let contentCell = '';
-  if (grid && grid.children.length > 1) {
-    const containerDiv = grid.children[1];
-    // The main content is within .card-body, but we want all content in that column
-    const card = containerDiv.querySelector('.card');
-    if (card) {
-      // Reference the .card-body (guaranteed to contain all relevant content, including heading, list, cta)
-      const cardBody = card.querySelector('.card-body');
-      if (cardBody) contentCell = cardBody;
-      else contentCell = card; // fallback
-    } else {
-      // fallback: use the containerDiv itself
-      contentCell = containerDiv;
+  // --- 2nd row: Background image ---
+  // Find the first direct img (background)
+  let bgImg = null;
+  if (gridDivs.length > 0) {
+    const possibleImg = gridDivs[0].querySelector('img');
+    if (possibleImg) {
+      bgImg = possibleImg;
     }
   }
 
+  // --- 3rd row: Content block ---
+  // Find the content container
+  let contentBlock = null;
+  if (gridDivs.length > 1) {
+    // Content with headline, subtext, CTA etc. is inside this container
+    // This may include grid, card, and card-body classes
+    // Retain full card structure for resilience
+    const card = gridDivs[1].querySelector('.card');
+    if (card) {
+      contentBlock = card;
+    } else {
+      // fallback, if no .card found
+      contentBlock = gridDivs[1];
+    }
+  }
+
+  // table structure as per example: 1 column, 3 rows
   const cells = [
     headerRow,
     [bgImg],
-    [contentCell]
+    [contentBlock]
   ];
+
   const block = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(block);
 }

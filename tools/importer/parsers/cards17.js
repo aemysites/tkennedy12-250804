@@ -1,24 +1,43 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
+  // Block header exactly as required
   const headerRow = ['Cards (cards17)'];
-  // Each card is a .utility-aspect-1x1 containing an <img> and possibly text content after it
-  const cardDivs = element.querySelectorAll(':scope > .utility-aspect-1x1');
-  const rows = Array.from(cardDivs).map(cardDiv => {
+
+  // Each direct child div is a card
+  const cardDivs = element.querySelectorAll(':scope > div');
+  const rows = [];
+
+  cardDivs.forEach((cardDiv) => {
+    // First cell: image element (if present)
     const img = cardDiv.querySelector('img');
-    // Gather all non-image child nodes as text content (if present)
-    const textContentNodes = Array.from(cardDiv.childNodes).filter(
-      (node) => node !== img && (node.nodeType === 1 || (node.nodeType === 3 && node.textContent.trim()))
-    );
-    let textCell = '';
-    if (textContentNodes.length) {
-      // If there are element/text nodes present other than the img, put them in the text cell
-      textCell = textContentNodes;
+    // Second cell: try to find any content other than the image
+    let textContent = '';
+    // We look for text nodes or elements that are not the image
+    cardDiv.childNodes.forEach((node) => {
+      if (node !== img && node.nodeType === Node.ELEMENT_NODE) {
+        textContent += node.outerHTML;
+      } else if (node !== img && node.nodeType === Node.TEXT_NODE) {
+        textContent += node.textContent.trim();
+      }
+    });
+    // If textContent is not empty, create a container element for it
+    let textCell;
+    if (textContent && textContent.length > 0) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = textContent;
+      textCell = wrapper;
+    } else {
+      textCell = '';
     }
-    return [img, textCell];
+    rows.push([img, textCell]);
   });
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    ...rows
-  ], document);
-  element.replaceWith(table);
+
+  // Compose the table data
+  const cells = [headerRow, ...rows];
+
+  // Create the block table
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Replace the original element with the block table
+  element.replaceWith(block);
 }

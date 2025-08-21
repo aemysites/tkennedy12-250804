@@ -1,54 +1,29 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Define the header row for columns5 block
-  const headerRow = ['Columns (columns5)'];
+  // Find the two columns in the source html
+  // They are .pwccol2-longform-c0 (left), .pwccol2-longform-c1 (right)
+  let leftCol = element.querySelector('.pwccol2-longform-c0');
+  let rightCol = element.querySelector('.pwccol2-longform-c1');
 
-  // Find the two column containers
-  const columns = element.querySelectorAll('.parsys_column');
-
-  // Defensive: If not exactly two columns, bail
-  if (columns.length !== 2) return;
-
-  // Prepare an array for each column's cell content
-  const cellContents = [];
-
-  // First column: usually image
-  const col1 = columns[0];
-  // Prefer the first image in this column
-  const col1Img = col1.querySelector('img');
-  if (col1Img) {
-    cellContents.push(col1Img);
-  } else {
-    // If no image, use all children as fallback
-    cellContents.push(...Array.from(col1.childNodes).filter(n => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim())));
+  // Defensive: fallback if structure changes
+  if (!leftCol || !rightCol) {
+    const colDivs = Array.from(element.querySelectorAll(':scope > div'));
+    leftCol = leftCol || colDivs[0];
+    rightCol = rightCol || colDivs[1];
   }
 
-  // Second column: usually text (list)
-  const col2 = columns[1];
-  // Find the text-component (ul)
-  const textComp = col2.querySelector('.text-component');
-  if (textComp) {
-    // Use the ul if present, else all children
-    const ul = textComp.querySelector('ul');
-    if (ul) {
-      cellContents.push(ul);
-    } else {
-      cellContents.push(...Array.from(textComp.childNodes).filter(n => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim())));
-    }
-  } else {
-    // If no text-component, use all children as fallback
-    cellContents.push(...Array.from(col2.childNodes).filter(n => n.nodeType === 1 || (n.nodeType === 3 && n.textContent.trim())));
-  }
+  // For each column, grab all container content for resilience
+  // Left column: get the .cmp-container inside, else the col itself
+  let leftContent = leftCol ? leftCol.querySelector('.cmp-container') || leftCol : '';
+  // Right column: get the .cmp-container inside, else the col itself
+  let rightContent = rightCol ? rightCol.querySelector('.cmp-container') || rightCol : '';
 
-  // Compose the table cells
+  // Build the columns block table
   const cells = [
-    headerRow,
-    cellContents
+    ['Columns (columns5)'],
+    [leftContent, rightContent]
   ];
 
-  // Create the block table
   const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace original element with the block table
   element.replaceWith(block);
 }

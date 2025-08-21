@@ -1,53 +1,27 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper function to get column elements in a columnControl
-  function getColumns(colCtrl) {
-    // Column containers have classes .parsys_column
-    return Array.from(colCtrl.querySelectorAll(':scope > .parsys_column'));
+  // Find all direct child a.strip-btn elements (these are the columns)
+  const links = Array.from(element.querySelectorAll(':scope > a.strip-btn'));
+  // Defensive: if fewer than 4, fill with empty cells
+  while (links.length < 4) {
+    links.push(document.createElement('div'));
   }
 
-  // Find all columnControl sections (each for a row of Columns block)
-  const columnControls = element.querySelectorAll(':scope .columnControl');
-
-  // Compose header row for Columns block
+  // Prepare rows for columns block: header, then two rows of two columns each
   const headerRow = ['Columns (columns14)'];
-  const rows = [];
-
-  columnControls.forEach((colCtrl) => {
-    const columns = getColumns(colCtrl);
-    // For each column, gather main cmp-container(s) content, or fallback to direct children
-    const cells = columns.map((col) => {
-      // Look for immediate .cmp-container children
-      const cmpContainers = col.querySelectorAll(':scope > .cmp-container');
-      if (cmpContainers.length) {
-        // See if .cmp-container has a single main child; otherwise use .cmp-container
-        return Array.from(cmpContainers).map((container) => {
-          // Select all direct children that are not empty divs
-          const mainKids = Array.from(container.children).filter(
-            (el) => !(el.tagName === 'DIV' && el.innerHTML.trim() === '')
-          );
-          // If only one real child, return it, else return all
-          if (mainKids.length === 1) return mainKids[0];
-          if (mainKids.length > 1) return mainKids;
-          // fallback
-          return container;
-        });
-      } else {
-        // fallback: use all direct children
-        const contentKids = Array.from(col.children).filter(
-          (el) => !(el.tagName === 'DIV' && el.innerHTML.trim() === '')
-        );
-        if (contentKids.length === 1) return contentKids[0];
-        if (contentKids.length > 1) return contentKids;
-        return col;
-      }
-    });
-    // flatten single-item arrays for cleaner table cells
-    const cellsFlat = cells.map((cell) => Array.isArray(cell) && cell.length === 1 ? cell[0] : cell);
-    rows.push(cellsFlat);
-  });
-
-  const tableData = [headerRow, ...rows];
-  const block = WebImporter.DOMUtils.createTable(tableData, document);
-  element.replaceWith(block);
+  
+  // First data row (first two columns)
+  const row1 = [links[0], links[1]];
+  // Second data row (second two columns)
+  const row2 = [links[2], links[3]];
+  
+  // Create the block table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    row1,
+    row2
+  ], document);
+  
+  // Replace the original element with the new table
+  element.replaceWith(table);
 }

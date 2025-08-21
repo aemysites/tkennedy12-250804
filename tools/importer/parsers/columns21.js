@@ -1,45 +1,27 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the 'columnControl' block - which contains the columns
-  const columnControl = element.querySelector('.columnControl');
-  if (!columnControl) return;
-
-  // Get the two column elements
-  const columns = Array.from(columnControl.querySelectorAll(':scope > .parsys_column'));
+  // Find direct column containers
+  const columns = element.querySelectorAll(':scope > .parsys_column');
   if (columns.length < 2) return;
 
-  // For each column, find the main cmp-container (if any), else, the column itself
-  const columnCells = columns.map(col => {
-    // Try to find a content container directly inside the column
+  // Helper to get the main content element from a column
+  function getColumnContent(col) {
+    // Prefer the inner '.cmp-container' if present
     const container = col.querySelector(':scope > .cmp-container');
-    if (container) {
-      // If container has only one child, use that child directly
-      const kids = Array.from(container.children).filter(x => x.nodeType === 1 && x.innerHTML.trim() !== '');
-      if (kids.length === 1) return kids[0];
-      // If multiple, group in fragment
-      const frag = document.createDocumentFragment();
-      kids.forEach(kid => frag.appendChild(kid));
-      return frag;
-    } else {
-      // fallback: use all non-empty direct children
-      const kids = Array.from(col.children).filter(x => x.nodeType === 1 && x.innerHTML.trim() !== '');
-      if (kids.length === 1) return kids[0];
-      const frag = document.createDocumentFragment();
-      kids.forEach(kid => frag.appendChild(kid));
-      return frag;
-    }
-  });
+    if (container) return container;
+    return col;
+  }
 
-  // Compose the table rows: header and content
+  const col1 = getColumnContent(columns[0]);
+  const col2 = getColumnContent(columns[1]);
+
+  // Build the table rows as per the block spec
+  // Header row: single cell with block name
   const headerRow = ['Columns (columns21)'];
-  const contentRow = columnCells;
+  // Columns row: array with both columns as one row
+  const columnsRow = [col1, col2];
 
-  // Build the columns block table
-  const block = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
-
-  // Replace the top-level section or container with the new table
-  element.replaceWith(block);
+  const cells = [headerRow, columnsRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(table);
 }

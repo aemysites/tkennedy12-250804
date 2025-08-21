@@ -1,30 +1,41 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Cards (cards12) block
+  // Table header: must match example exactly
   const headerRow = ['Cards (cards12)'];
+  // Each article is a card
+  const cards = Array.from(element.querySelectorAll(':scope > article'));
+  // Build the rows for the block table
+  const rows = cards.map(card => {
+    // Link wraps everything in each card
+    const link = card.querySelector('a');
+    // Image is mandatory
+    const img = link.querySelector('img');
+    // Heading (title)
+    const heading = link.querySelector('h3');
+    // Description/abstract
+    const abstract = link.querySelector('p');
 
-  // Find the filter buttons representing each card
-  const filterContainer = element.querySelector('.ceo-filter-container');
-  if (!filterContainer) return;
-  const filterBlock = filterContainer.querySelector('.coe-filter');
-  if (!filterBlock) return;
-  const buttons = Array.from(filterBlock.querySelectorAll('.filter-button-item'));
-
-  // Build card rows: always two columns (first: icon/image, second: text)
-  const rows = buttons.map(btn => {
-    // First cell: no image/icon provided, so leave blank
-    // Second cell: use the button itself, preserving styling; wrap label in <strong> for semantic heading
-    const textEl = document.createElement('div');
-    const strong = document.createElement('strong');
-    strong.textContent = btn.textContent.trim();
-    textEl.appendChild(strong);
-    return ['', textEl];
+    // Compose text content: heading in <strong>, description below
+    const textContent = [];
+    if (heading) {
+      // Use heading element directly for semantic meaning, but apply <strong> for bold as in example
+      const strong = document.createElement('strong');
+      strong.textContent = heading.textContent;
+      textContent.push(strong);
+    }
+    if (abstract) {
+      textContent.push(document.createTextNode(' ')); // spacing like example
+      textContent.push(abstract);
+    }
+    // No explicit CTA in source; entire card is a link
+    // Structure: [image, combined text cell]
+    return [img, textContent];
   });
-
-  // Build final table data array
-  const cells = [headerRow, ...rows];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace element
-  element.replaceWith(block);
+  // Build final table with header and rows
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    ...rows
+  ], document);
+  // Replace original element
+  element.replaceWith(table);
 }

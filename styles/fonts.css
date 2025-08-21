@@ -1,23 +1,5 @@
 
 @font-face {
-  font-family: "PwC Helvetica Neue";      
-  src: url('../fonts/pwc-helvetica-neue-400-normal.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0-10FFFF;
-}
-
-@font-face {
-  font-family: "PwC Helvetica Neue";      
-  src: url('../fonts/pwc-helvetica-neue-bold-normal.woff2') format('woff2');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0-10FFFF;
-}
-
-@font-face {
   font-family: "PwC Helvetica Neue Light";      
   src: url('../fonts/pwc-helvetica-neue-light-normal-normal.woff2') format('woff2');
   font-weight: normal;
@@ -30,6 +12,24 @@
   font-family: "PwC ITC Charter";      
   src: url('../fonts/pwc-itc-charter-400-normal.woff2') format('woff2');
   font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+  font-family: "PwC Helvetica Neue";      
+  src: url('../fonts/pwc-helvetica-neue-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0-10FFFF;
+}
+
+@font-face {
+  font-family: "PwC Helvetica Neue";      
+  src: url('../fonts/pwc-helvetica-neue-bold-normal.woff2') format('woff2');
+  font-weight: bold;
   font-style: normal;
   font-display: swap;
   unicode-range: U+0-10FFFF;

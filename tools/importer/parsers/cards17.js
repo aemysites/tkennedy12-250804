@@ -1,54 +1,23 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Table header row exactly as specified
+  // Header row as per block spec
   const headerRow = ['Cards (cards17)'];
-  const rows = [headerRow];
 
-  // Get all card blocks: direct children of '.parsys' with class 'textimage text section'
-  const cardNodes = Array.from(element.querySelectorAll('.parsys > .textimage.text.section'));
+  // Find all card columns (3 in this layout)
+  // Get each pwccol3-longform-cN column
+  const columns = Array.from(element.querySelectorAll(':scope > div > div'));
 
-  cardNodes.forEach(card => {
-    // First column: image (mandatory)
-    const img = card.querySelector('.textimage-image img');
-    // Reference the existing image element if present
-    const imageEl = img ? img : '';
-
-    // Second column: text block
-    const textComponent = card.querySelector('.textimage-text .text-component');
-    const cellElements = [];
-    if (textComponent) {
-      // Grab all <p> elements in the text component
-      const ps = textComponent.querySelectorAll('p');
-      // Title: if first <p> contains a link, use the link text as heading (simulate <strong>)
-      if (ps.length > 0) {
-        const firstP = ps[0];
-        const firstLink = firstP.querySelector('a');
-        if (firstLink) {
-          // Make a <strong> element, but reference the link itself from the DOM
-          const strong = document.createElement('strong');
-          strong.appendChild(firstLink);
-          cellElements.push(strong);
-        }
-      }
-      // Description: use second <p> if present, else just first <p> if not a link
-      if (ps.length > 1) {
-        cellElements.push(ps[1]);
-      } else if (ps.length === 1) {
-        // If first <p> did not have a link, add it as description
-        const firstLink = ps[0].querySelector('a');
-        if (!firstLink) {
-          cellElements.push(ps[0]);
-        }
-      }
-    }
-    // Push the row, referencing existing image and text elements
-    rows.push([
-      imageEl,
-      cellElements.length ? cellElements : ''
-    ]);
+  const rows = columns.map(col => {
+    // Find the image element (mandatory)
+    const img = col.querySelector('img');
+    // Find the text content block (mandatory)
+    const textContent = col.querySelector('.text-component');
+    // If either is missing, still fill with null to keep structure safe
+    return [img || '', textContent || ''];
   });
 
-  // Create the block table and replace the original element
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Compose final table array
+  const tableData = [headerRow, ...rows];
+  const table = WebImporter.DOMUtils.createTable(tableData, document);
   element.replaceWith(table);
 }

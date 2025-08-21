@@ -1242,26 +1242,23 @@ main > div:has(.hero.hero28),
   display: block;
 }
 
-/* Remove left-side bar if present */
 .hero.hero11 > div:first-child,
 .hero.hero11 > div:first-child > div {
   display: none;
 }
 
-/* Text container: flush to top, generous width for best line breaks */
 .hero.hero11 > div:last-child {
   position: relative;
   z-index: 2;
   box-sizing: border-box;
   max-width: 1120px;
-  padding: 0 0 0 38px; /* No top padding */
+  padding: 0 0 0 38px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
 }
 
-/* Headline flush to top, tight stacking, extra wide */
 .hero.hero11 h1 {
   color: #fff;
   font-family: var(--heading-font-family), Arial, sans-serif;
@@ -1277,7 +1274,6 @@ main > div:has(.hero.hero28),
   overflow-wrap: break-word;
 }
 
-/* Emphasized phrase: large for drama, but fits on one line */
 .hero.hero11 h1 em {
   display: block;
   font-style: normal;
@@ -1290,7 +1286,6 @@ main > div:has(.hero.hero28),
   text-shadow: 0 2px 18px rgb(0 0 0 / 28%);
 }
 
-/* Responsive: less padding/width, smaller font sizes */
 @media (width <= 900px) {
   .hero.hero11 {
     min-height: 320px;
@@ -1312,4 +1307,98 @@ main > div:has(.hero.hero28),
   }
 }
 
-/* Ensure hero is above other UI */
+
+.hero.hero1 {
+  /* Use column-reverse so text is at the top and image is immediately below */
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 48px 0 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 0;
+}
+
+/* Image section: ensure full width, no skew, standard aspect ratio */
+.hero.hero1 > div:first-child {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.hero.hero1 picture,
+.hero.hero1 img {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  /* Remove any transform/skew */
+  transform: none;
+}
+
+/* Text section: headline and subheading grouped tightly at top */
+.hero.hero1 > div:nth-child(2) {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+}
+
+.hero.hero1 > div:nth-child(2) > div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 4px; /* Tight gap between headline and subheading */
+}
+
+/* Headline styling */
+.hero.hero1 h1 {
+  font-family: "ITC Charter", "PwC ITC Charter Fallback", serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #181818;
+  margin: 0 0 6px;
+  line-height: 1.15;
+  text-align: left;
+  max-width: 20ch;
+  padding: 0;
+}
+
+/* Subheading styling */
+.hero.hero1 p {
+  font-size: 1.08rem;
+  color: #222;
+  font-weight: 400;
+  margin: 0 0 10px;
+  line-height: 1.4;
+  text-align: left;
+  max-width: 60ch;
+  padding: 0;
+}
+
+/* Responsive adjustments */
+@media (width <= 900px) {
+  .hero.hero1 {
+    padding: 32px 0 0;
+    max-width: 100vw;
+  }
+
+  .hero.hero1 h1 {
+    font-size: 1.55rem;
+    max-width: 98vw;
+  }
+
+  .hero.hero1 p {
+    font-size: 0.98rem;
+    max-width: 96vw;
+  }
+}

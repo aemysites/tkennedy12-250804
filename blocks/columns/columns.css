@@ -1,12 +1,12 @@
 /* stylelint-disable no-descending-specificity */
 .columns > div {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 56px;
+  gap: 48px;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 48px 32px 40px;
   min-height: 360px;
@@ -1120,7 +1120,7 @@
 
 .columns {
   background: #fff;
-  padding: 0 36px;
+  padding: 40px 24px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
@@ -1131,6 +1131,7 @@
   max-width: 1160px;
   box-sizing: border-box;
   min-height: 160px;
+  border-top: 1px solid #e0e0e0;
 }
 
 @media (width <= 900px) {
@@ -1158,26 +1159,34 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  max-width: 95vw;
+  max-width: 560px;
   gap: 20px;
   text-align: left;
-  width: 360px;
+  width: 100%;
   flex-shrink: 0;
 }
 
 .columns > div > div:first-child h2 {
   margin: 0 0 28px;
+  font-family: Georgia, serif;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #000;
+  margin-top: 0;
+  margin-bottom: 20px;
+  line-height: 1.15;
 }
 
 .columns > div > div:first-child p {
-  margin: 0 0 18px;
+  margin: 0 0 32px;
   padding: 0;
-  color: #555;
+  color: #333;
   font-size: 1rem;
   line-height: 1.5;
-  max-width: 34em;
+  max-width: 38em;
   position: relative;
   text-align: left;
+  font-family: Arial, sans-serif;
 }
 
 .columns > div > div:first-child p:nth-of-type(1)::before,
@@ -1197,17 +1206,17 @@
   flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: flex-start;
   min-width: 0;
   box-sizing: border-box;
   padding: 0;
-  gap: 18px;
+  gap: 0;
   position: relative;
-  max-width: 690px;
+  max-width: 480px;
   text-align: left;
   margin: 0;
-  width: 0;
+  width: 100%;
 }
 
 .columns > div > div:last-child > p {
@@ -2299,7 +2308,7 @@
   gap: 56px;
   max-width: 1160px;
   margin: 0 auto;
-  padding: 36px 36px 40px; /* minimal top padding for top alignment */
+  padding: 36px 36px 40px;
   box-sizing: border-box;
 }
 
@@ -2311,7 +2320,6 @@
   }
 }
 
-/* --- LEFT COLUMN --- */
 .columns.columns3 > div > div:first-child {
   flex: 1 1 0;
   min-width: 320px;
@@ -2321,7 +2329,6 @@
   align-items: flex-start;
 }
 
-/* Ensure all children are visible by default */
 .columns.columns3 > div > div:first-child > * {
   display: block;
   margin-bottom: 18px;
@@ -2331,7 +2338,6 @@
   margin-bottom: 0;
 }
 
-/* Title first, paragraphs next, blockquotes last using flex order */
 .columns.columns3 > div > div:first-child h2 { order: 1;
   font-family: var(--heading-font-family);
   font-size: 2.1rem;
@@ -2341,6 +2347,7 @@
   text-align: left;
   line-height: 1.1;
   letter-spacing: 0; }
+
 .columns.columns3 > div > div:first-child p { order: 2;
   font-size: 1.05rem;
   color: #222;
@@ -2351,11 +2358,6 @@
   font-family: var(--body-font-family); }
 .columns.columns3 > div > div:first-child blockquote { order: 3; }
 
-/* Title */
-
-/* Body paragraphs */
-
-/* Orange callout as highlight at end, no border/line */
 .columns.columns3 > div > div:first-child blockquote:first-of-type p {
   color: #F60;
   font-size: 1.16rem;
@@ -2367,7 +2369,6 @@
   border: none;
 }
 
-/* Citation under callout */
 .columns.columns3 > div > div:first-child blockquote + blockquote p {
   color: #888;
   font-size: 0.95rem;
@@ -2378,7 +2379,6 @@
   border: none;
 }
 
-/* --- RIGHT COLUMN --- */
 .columns.columns3 > div > div:last-child {
   flex: 0 0 350px;
   max-width: 370px;
@@ -2392,7 +2392,6 @@
   padding: 0;
 }
 
-/* Only hide unwanted elements; show first picture/img, last p (caption) and h3 (headline) */
 .columns.columns3 > div > div:last-child > ul,
 .columns.columns3 > div > div:last-child > li,
 .columns.columns3 > div > div:last-child > p:not(:first-of-type, :last-of-type) {
@@ -2418,7 +2417,6 @@
   display: block;
 }
 
-/* Caption under video thumbnail */
 .columns.columns3 > div > div:last-child > p:last-of-type {
   font-size: 0.94rem;
   color: #222;
@@ -2430,7 +2428,6 @@
   margin: 0 0 10px;
 }
 
-/* Headline under video thumbnail */
 .columns.columns3 > div > div:last-child > h3 {
   font-size: 1.08rem;
   color: #181818;
@@ -2453,5 +2450,68 @@
   .columns.columns3 > div > div:last-child > img,
   .columns.columns3 > div > div:last-child > p:last-of-type {
     max-width: 95vw;
+  }
+}
+
+@media (width <= 900px) {
+  .columns > div {
+    flex-direction: column;
+    gap: 32px;
+    padding: 0;
+  }
+}
+
+/* LEFT COLUMN: Only show heading and first paragraph */
+
+.columns > div > div:first-child > *:not(h2, p:nth-of-type(1)) {
+  display: none;
+}
+
+/* RIGHT COLUMN: Only show the first image-containing element, hide everything else */
+
+.columns > div > div:last-child > * {
+  display: none;
+}
+
+/* Show only the first <p> that contains a picture or img */
+.columns > div > div:last-child > p:has(picture),
+.columns > div > div:last-child > p:has(img) {
+  display: block;
+}
+
+/* Also allow for direct child picture or img display */
+.columns > div > div:last-child > picture,
+.columns > div > div:last-child > img {
+  display: block;
+}
+
+/* Hide all other <p>s with images beyond the first */
+.columns > div > div:last-child > p:has(picture):not(:first-of-type),
+.columns > div > div:last-child > p:has(img):not(:first-of-type) {
+  display: none;
+}
+
+/* Image styling */
+.columns > div > div:last-child img,
+.columns > div > div:last-child picture {
+  width: 340px;
+  height: 210px;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+  align-self: flex-start;
+}
+
+/* Responsive: let image stretch but stay top-aligned */
+@media (width <= 900px) {
+  .columns > div > div:last-child img,
+  .columns > div > div:last-child picture {
+    width: 100vw;
+    max-width: 340px;
+    height: auto;
+    margin: 0 auto;
   }
 }

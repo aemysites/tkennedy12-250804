@@ -1630,7 +1630,6 @@
   box-sizing: border-box;
 }
 
-/* Card row: fill container, white background, cards grouped tightly */
 .cards.cards7 > ul {
   display: flex;
   flex-direction: row;
@@ -1646,7 +1645,6 @@
   border-radius: 0;
 }
 
-/* Card: flush left/right, fixed width, no extra margin */
 .cards.cards7 > ul > li {
   background: #fff;
   display: flex;
@@ -1661,7 +1659,6 @@
   box-sizing: border-box;
 }
 
-/* Image: fixed left, top-aligned to text */
 .cards.cards7 .cards-card-image {
   width: 60px;
   height: 60px;
@@ -1680,7 +1677,6 @@
   display: block;
 }
 
-/* Card content: left aligned */
 .cards.cards7 .cards-card-body {
   display: flex;
   flex-direction: column;
@@ -1694,7 +1690,6 @@
   text-align: left;
 }
 
-/* Name styling */
 .cards.cards7 .cards-card-body > p:first-child {
   font-family: var(--heading-font-family);
   font-size: 18px;
@@ -1705,7 +1700,6 @@
   text-align: left;
 }
 
-/* Title/company info */
 .cards.cards7 .cards-card-body > p:nth-child(2) {
   font-family: var(--body-font-family);
   font-size: 13px;
@@ -1717,7 +1711,6 @@
   word-break: break-word;
 }
 
-/* Buttons: left aligned, inline, tightly spaced */
 .cards.cards7 .cards-card-body > p:last-child {
   display: flex;
   flex-direction: row;
@@ -1766,7 +1759,6 @@
   text-decoration: underline;
 }
 
-/* Responsive: stack cards on mobile, add padding */
 @media (width <= 900px) {
   .cards.cards7 > ul {
     flex-direction: column;
@@ -1786,4 +1778,51 @@
   .cards.cards7 .cards-card-image {
     margin-right: 8px;
   }
+}
+
+
+.cards.cards13 .cards-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  background: none;
+}
+
+/* Heading: even smaller and lighter weight for subtlety, with clear spacing below */
+.cards.cards13 .cards-card-body h5 {
+  font-family: var(--heading-font-family, Arial, Helvetica, sans-serif);
+  font-size: 12px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+  padding-bottom: 5px;
+  background: none;
+  text-align: left;
+  line-height: 1.25;
+  border: none;
+  order: 1;
+}
+
+/* Full-width, longer left-edge, subtle gradient line under heading */
+.cards.cards13 .cards-card-body::after {
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 0;
+  background: linear-gradient(to right, #cfd3d6 35%, #fff 100%);
+  border: none;
+  border-radius: 2px;
+  pointer-events: none;
+  opacity: 1;
+  position: relative;
+  order: 2;
+}
+
+/* Remove unwanted default bottom margin from heading for tight stacking */
+.cards.cards13 .cards-card-body > h5 {
+  margin-bottom: 0;
 }

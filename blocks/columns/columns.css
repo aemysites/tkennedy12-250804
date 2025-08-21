@@ -1,7 +1,7 @@
 /* stylelint-disable no-descending-specificity */
 .columns > div {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   gap: 56px;
@@ -11,6 +11,8 @@
   padding: 48px 32px 40px;
   min-height: 360px;
   box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .columns img {
@@ -1247,17 +1249,17 @@
 
 .columns {
   background: #fff;
-  padding: 0;
+  padding: 0 36px;
   margin: 0 auto;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   justify-content: flex-start;
-  gap: 36px;
+  gap: 56px;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1160px;
   box-sizing: border-box;
-  min-height: 340px;
+  min-height: 160px;
 }
 
 @media (width <= 900px) {
@@ -2209,7 +2211,6 @@
   box-sizing: border-box;
 }
 
-/* Make the immediate child a grid if it contains the cells */
 .columns.columns14 > div {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2222,10 +2223,9 @@
   margin: 0;
 }
 
-/* Each direct child is a grid cell */
 .columns.columns14 > div > * {
   display: flex;
-  flex-direction: row; /* side by side text and icon */
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   min-height: 38px;
@@ -2241,19 +2241,16 @@
   border: none;
 }
 
-/* Internal vertical divider: left column cells */
 .columns.columns14 > div > *:nth-child(1),
 .columns.columns14 > div > *:nth-child(3) {
   border-right: 1px solid #e5e7eb;
 }
 
-/* Internal horizontal divider: top row cells */
 .columns.columns14 > div > *:nth-child(1),
 .columns.columns14 > div > *:nth-child(2) {
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* Responsive: stack cells vertically on small screens */
 @media (width <= 900px) {
   .columns.columns14 > div {
     grid-template-columns: 1fr;
@@ -2270,5 +2267,158 @@
 
   .columns.columns14 > div > *:last-child {
     border-bottom: none;
+  }
+}
+
+/* Responsive stacking on small screens */
+@media (width <= 900px) {
+  .columns {
+    flex-direction: column;
+    gap: 28px;
+    padding: 0 12px;
+    max-width: 100vw;
+    min-height: unset;
+  }
+}
+
+/* Columns' direct children as side-by-side columns */
+
+/* Left column styles */
+.columns > div:first-child {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  max-width: 540px;
+}
+
+.columns > div:first-child h1,
+.columns > div:first-child h2 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #181818;
+  line-height: 1.22;
+  margin: 0 0 16px;
+  text-align: left;
+}
+
+.columns > div:first-child p {
+  font-size: 0.97rem;
+  color: #222;
+  font-family: var(--body-font-family, Arial, serif);
+  line-height: 1.62;
+  margin: 0 0 14px;
+  max-width: 40em;
+  text-align: left;
+}
+
+/* Right column as a video panel/card */
+.columns > div:last-child {
+  background: #f6f6f6;
+  border-radius: 0;
+  padding: 24px 28px;
+  min-width: 0;
+  min-height: 120px;
+  box-sizing: border-box;
+  max-width: 540px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+@media (width <= 900px) {
+  .columns > div:last-child {
+    padding: 16px 8px;
+    min-height: unset;
+    max-width: 100vw;
+  }
+}
+
+/* Panel heading */
+.columns > div:last-child h2,
+.columns > div:last-child h3 {
+  font-family: var(--heading-font-family, Arial, sans-serif);
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 10px;
+  line-height: 1.25;
+  text-align: left;
+  display: flex;
+  align-items: center;
+}
+
+/* Icon alignment */
+.columns > div:last-child .icon {
+  margin-left: 8px;
+  height: 18px;
+  width: 18px;
+  display: inline-block;
+}
+
+/* Panel body text */
+.columns > div:last-child p,
+.columns > div:last-child span {
+  font-size: 0.93rem;
+  color: #333;
+  margin: 0 0 15px;
+  font-family: var(--body-font-family, Arial, serif);
+  line-height: 1.45;
+  text-align: left;
+}
+
+/* Cookie settings button styling */
+.columns > div:last-child button,
+.columns > div:last-child .button {
+  display: inline-block;
+  margin: 16px 0 0;
+  border: 1px solid #222;
+  background: #fff;
+  color: #222;
+  font-size: 0.97rem;
+  font-family: var(--body-font-family, Arial, serif);
+  font-weight: 700;
+  padding: 8px 26px;
+  border-radius: 2px;
+  box-shadow: none;
+  cursor: pointer;
+  text-transform: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.columns > div:last-child button:hover,
+.columns > div:last-child .button:hover,
+.columns > div:last-child button:focus,
+.columns > div:last-child .button:focus {
+  background: #f2f2f2;
+  border-color: #222;
+  color: #111;
+}
+
+@media (width <= 900px) {
+  .columns > div:last-child button,
+  .columns > div:last-child .button {
+    width: 100%;
+    max-width: 276px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Always align flex items at the top for both columns */
+.columns > div,
+.columns > div:first-child,
+.columns > div:last-child {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+@media (width <= 900px) {
+  .columns > div,
+  .columns > div:first-child,
+  .columns > div:last-child {
+    align-items: flex-start;
+    text-align: left;
   }
 }

@@ -1400,73 +1400,71 @@ main > div:has(.hero.hero28),
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  min-height: 540px;
+  align-items: stretch;
+  justify-content: flex-start;
   width: 100vw;
+  min-height: 100vh;
+  height: 100vh;
   background: url('https://images.ctfassets.net/ut8p8a7odewz/4bZlNafp6r5l2iEFK2fI06/1f2d6d2198c1b4e2f6346a6e6c1f77b6/pwc-office-bg.jpg') center center / cover no-repeat;
+  margin: 0;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
-/* Single diagonal orange accent bar, behind text and figures */
 .hero.hero8::before {
   position: absolute;
   left: -18vw;
-  top: 49%;
-  width: 118vw;
-  height: 104px;
+  top: 25%;
+  width: 120vw;
+  height: 150px;
   background: #ff5c1a;
   border-radius: 32px;
   transform: skew(-14deg) rotate(-3deg);
   box-shadow: 0 12px 40px 0 rgb(255 92 26 / 10%);
   z-index: 1;
-  display: block;
   pointer-events: none;
-  content: "";
+  display: block;
 }
 
-/* The first child is just for legacy spacing; hide it */
 .hero.hero8 > div:first-child {
   display: none;
 }
 
-/* Text block container */
 .hero.hero8 > div:last-child {
   position: relative;
-  flex: 1 1 560px;
-  max-width: 600px;
-  min-width: 320px;
+  flex: 1 1 600px;
+  max-width: 610px;
+  min-width: 340px;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: flex-start;
-  justify-content: flex-start;
+  height: 100vh;
   z-index: 2;
-  padding-left: 7vw;
-  padding-top: 8vw;
-  padding-bottom: 5vw;
+  padding: 0 2vw 0 7vw;
 }
 
-/* Actual text block */
 .hero.hero8 > div:last-child > div {
   width: 100%;
-  max-width: 520px;
+  max-width: 440px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  z-index: 3;
   background: none;
   margin: 0;
-  z-index: 3;
+  justify-content: flex-start;
 }
 
-/* Headline styles, more compact for a stacked look */
 .hero.hero8 h1 {
   font-family: "ITC Charter", "PwC ITC Charter Fallback", serif;
-  font-size: 3.2rem;
+  font-size: 2.7rem;
   font-weight: 900;
-  line-height: 1.05;
+  line-height: 1.01;
   color: #181818;
-  margin: 0 0 0.2em;
+  margin: 0 0 0.12em;
   letter-spacing: -0.01em;
-  max-width: 20ch;
+  max-width: 10.5ch;
   text-align: left;
   z-index: 3;
 }
@@ -1475,25 +1473,20 @@ main > div:has(.hero.hero28),
   display: block;
   font-style: normal;
   font-weight: 900;
-  font-size: 4.2rem;
+  font-size: 3.7rem;
   color: #181818;
-  margin: 0.18em 0 0.10em;
+  margin: 0.08em 0 0.04em;
   line-height: 1.01;
   z-index: 3;
+  padding: 0;
 }
 
-/* Compact stacking for supporting lines */
-.hero.hero8 h1 + br,
-.hero.hero8 h1 + span,
-.hero.hero8 h1 + em {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-/* Button container and style */
 .hero.hero8 .button-container {
-  margin-top: 1.1rem;
+  margin-top: 4.5rem;
   z-index: 3;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
 }
 
 .hero-container > .hero-wrapper > .block.hero.hero8 .button {
@@ -1515,31 +1508,35 @@ main > div:has(.hero.hero28),
   z-index: 3;
 }
 
-/* Responsive adjustments */
 @media (width <= 1100px) {
+  .hero.hero8 {
+    min-height: 540px;
+    height: auto;
+  }
+
   .hero.hero8 > div:last-child {
     max-width: 98vw;
     flex-basis: 70vw;
     min-width: 0;
     padding-left: 5vw;
-    padding-top: 40px;
-    padding-bottom: 22px;
+    padding-right: 2vw;
+    height: auto;
   }
 
   .hero.hero8 h1 {
-    font-size: 2.2rem;
+    font-size: 1.3rem;
     max-width: 95vw;
   }
 
   .hero.hero8 h1 em {
-    font-size: 2.6rem;
+    font-size: 1.8rem;
   }
 
   .hero.hero8::before {
-    height: 58px;
-    left: -22vw;
+    height: 59px;
+    left: -20vw;
     width: 120vw;
-    top: 56%;
+    top: 36%;
     border-radius: 14px;
   }
 }
@@ -1547,7 +1544,8 @@ main > div:has(.hero.hero28),
 @media (width <= 700px) {
   .hero.hero8 {
     flex-direction: column;
-    min-height: 260px;
+    min-height: 320px;
+    height: auto;
   }
 
   .hero.hero8 > div:last-child {
@@ -1555,6 +1553,7 @@ main > div:has(.hero.hero28),
     max-width: 100vw;
     min-width: 0;
     padding: 12px 4vw;
+    height: auto;
   }
 
   .hero.hero8 > div:last-child > div {
@@ -1562,21 +1561,21 @@ main > div:has(.hero.hero28),
   }
 
   .hero.hero8 h1 {
-    font-size: 1.15rem;
+    font-size: 1rem;
     max-width: 95vw;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem;
   }
 
   .hero.hero8 h1 em {
-    font-size: 1.18rem;
-    margin: 0.09em 0 0.07em;
+    font-size: 1.09rem;
+    margin: 0.05em 0 0.03em;
   }
 
   .hero.hero8::before {
-    height: 22px;
+    height: 16px;
     width: 110vw;
     left: -16vw;
-    top: 53%;
+    top: 56%;
     border-radius: 6px;
   }
 }

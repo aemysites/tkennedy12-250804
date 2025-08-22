@@ -34,28 +34,6 @@
 
 /* fallback fonts */
 @font-face {
-  font-family:"PwC Helvetica Neue Light Fallback";
-  font-style:normal;
-  font-weight:normal;
-  src:local("Arial");
-  ascent-override:99.55%;
-  descent-override:25.53%;
-  line-gap-override:0.00%;
-  size-adjust:97.14%;
-}
-
-@font-face {
-  font-family:"PwC ITC Charter Fallback";
-  font-style:normal;
-  font-weight:400;
-  src:local("Arial");
-  ascent-override:98.99%;
-  descent-override:28.90%;
-  line-gap-override:0.00%;
-  size-adjust:97.59%;
-}
-
-@font-face {
   font-family:"PwC Helvetica Neue Fallback";
   font-style:normal;
   font-weight:400;
@@ -75,6 +53,28 @@
   descent-override:21.69%;
   line-gap-override:0.00%;
   size-adjust:100.05%;
+}
+
+@font-face {
+  font-family:"PwC ITC Charter Fallback";
+  font-style:normal;
+  font-weight:400;
+  src:local("Arial");
+  ascent-override:98.99%;
+  descent-override:28.90%;
+  line-gap-override:0.00%;
+  size-adjust:97.59%;
+}
+
+@font-face {
+  font-family:"PwC Helvetica Neue Light Fallback";
+  font-style:normal;
+  font-weight:normal;
+  src:local("Arial");
+  ascent-override:99.55%;
+  descent-override:25.53%;
+  line-gap-override:0.00%;
+  size-adjust:97.14%;
 }
 
 @media (width>=900px) {

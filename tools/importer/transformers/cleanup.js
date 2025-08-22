@@ -45,6 +45,10 @@ export default function transform(hookName, element) {
       'style',
       'script',
       'noscript',
+      'nav#skipNav',
+      '[id^=videojsContainer]',
+      '#onetrust-consent-sdk',
+      '#followUs',
     ]);
   }
   if (hookName === TransformHook.afterTransform) {
